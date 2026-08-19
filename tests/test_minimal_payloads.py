@@ -5,15 +5,16 @@ from datetime import UTC, datetime
 
 import pytest
 from aws_durable_execution_sdk_python import DurableContext, durable_execution
+from aws_durable_execution_sdk_python.exceptions import SerDesError
 from aws_durable_execution_sdk_python.serdes import ExtendedTypeSerDes, SerDesContext
 from aws_durable_execution_sdk_python.types import StepContext
 from aws_durable_execution_sdk_python_testing import DurableFunctionTestRunner
 
 from conftest_nested_payloads import FakeS3
-from nested_payloads.minimal import Manifest, TrackedFile, load_manifest, save_manifest
+from nested_payloads.minimal import Manifest, Status, TrackedFile, load_manifest, save_manifest
 
 NESTED = Manifest(
-    status='ready',
+    status=Status.READY,
     bucket='test-lake',
     files=[
         TrackedFile('incoming/a.csv', 120, datetime(2026, 8, 19, 9, 0, tzinfo=UTC)),
@@ -79,7 +80,7 @@ def test_a_handler_using_only_dicts_needs_no_step_config(fake_s3):
     @durable_execution
     def lambda_handler(_event: dict, context: DurableContext) -> dict:
         def discover(step_context: StepContext) -> dict:
-            manifest = Manifest('ready', 'test-lake', discovered)
+            manifest = Manifest(Status.READY, 'test-lake', discovered)
             step_context.logger.info('found %d file(s)', len(manifest.files))
             return manifest.to_dict()
 
@@ -99,3 +100,72 @@ def test_a_handler_using_only_dicts_needs_no_step_config(fake_s3):
     assert json.loads(result.result)['files'] == 1
     assert load_manifest(fake_s3, 'test-lake', 'manifests/run-1.json').files[0].key == 'incoming/a.csv'
     assert fake_s3.put_calls == 1
+
+
+# --- StrEnum ---
+
+
+def test_a_strenum_serializes_with_no_configuration():
+    """It is a str subclass, so the codec takes its primitive fast path."""
+    codec, ctx = ExtendedTypeSerDes(), SerDesContext()
+
+    assert codec.serialize(Status.READY, ctx) == '"ready"'
+
+
+def test_a_strenum_comes_back_as_a_plain_str():
+    codec, ctx = ExtendedTypeSerDes(), SerDesContext()
+
+    restored = codec.deserialize(codec.serialize(Status.READY, ctx), ctx)
+
+    assert type(restored) is str
+    assert not isinstance(restored, Status)
+
+
+def test_a_downgraded_strenum_still_compares_and_matches():
+    """Which is why the downgrade goes unnoticed until something checks the type."""
+    codec, ctx = ExtendedTypeSerDes(), SerDesContext()
+    restored = codec.deserialize(codec.serialize(Status.READY, ctx), ctx)
+
+    assert restored == Status.READY
+    assert restored in {Status.READY}
+    assert {Status.READY: 1}[restored] == 1
+    match restored:
+        case Status.READY:
+            pass
+        case _:
+            pytest.fail('match/case did not match the member')
+
+
+def test_a_downgraded_strenum_loses_isinstance_and_name():
+    codec, ctx = ExtendedTypeSerDes(), SerDesContext()
+    restored = codec.deserialize(codec.serialize(Status.READY, ctx), ctx)
+
+    assert not isinstance(restored, Status)
+    with pytest.raises(AttributeError):
+        _ = restored.name
+
+
+def test_a_plain_enum_is_a_hard_failure_not_a_downgrade():
+    """Unlike StrEnum, an Enum that is not str- or int-backed raises."""
+    from enum import Enum
+
+    class Mode(Enum):
+        FULL = 'full'
+
+    with pytest.raises(SerDesError, match='Unsupported type'):
+        ExtendedTypeSerDes().serialize(Mode.FULL, SerDesContext())
+
+
+def test_from_dict_restores_the_member_and_validates():
+    restored = Manifest.from_dict(NESTED.to_dict())
+
+    assert isinstance(restored.status, Status)
+    assert restored.status.name == 'READY'
+    assert isinstance(restored.files[0].status, Status)
+
+
+def test_an_unknown_status_is_rejected_on_rebuild():
+    payload = NESTED.to_dict() | {'status': 'bogus'}
+
+    with pytest.raises(ValueError, match='not a valid Status'):
+        Manifest.from_dict(payload)

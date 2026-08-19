@@ -111,6 +111,55 @@ def load_manifest(s3_client, bucket, key) -> Manifest:
 That is `src/nested_payloads/minimal.py`, 21 lines of conversion across two types. Everything below
 is what to reach for when that stops being enough.
 
+## `StrEnum` needs nothing, but comes back a plain `str`
+
+A `StrEnum` is a `str` subclass, so it passes the codec's primitive fast path and checkpoints as an
+ordinary JSON string. Nothing has to be configured. What comes back is a `str`, not the member.
+
+Measured on SDK 1.7.0:
+
+| | Result |
+|---|---|
+| `codec.serialize(Status.READY)` | `"ready"` |
+| `type(restored)` | `str` |
+| `restored == Status.READY` | `True` |
+| `restored in {Status.READY}` | `True` |
+| `{Status.READY: 1}[restored]` | `1` |
+| `match restored: case Status.READY:` | matches |
+| `isinstance(restored, Status)` | **`False`** |
+| `restored.name` | **`AttributeError`** |
+
+!!! warning "The downgrade is invisible until something checks the type"
+    Comparison, set membership, dict lookup and `match`/`case` all keep working, because a
+    `StrEnum` member hashes and compares as its value. Only `isinstance` and `.name` break, and they
+    break somewhere else, later.
+
+Restore it in `from_dict`, which is one call and validates on the way in:
+
+```python
+@classmethod
+def from_dict(cls, payload: dict) -> 'Manifest':
+    return cls(Status(payload['status']), payload['bucket'], ...)
+```
+
+```text
+ValueError: 'bogus' is not a valid Status
+```
+
+Going out, pass the field through rather than reading `.value`:
+
+```python
+def to_dict(self) -> dict:
+    return {'status': self.status, ...}     # not self.status.value
+```
+
+`json.dumps` emits the member's value either way, and the tolerant form does not raise on an
+instance built with a bare string — a dataclass does no runtime type checking, so that happens.
+
+!!! danger "A plain `Enum` is a hard failure, not a downgrade"
+    An `Enum` that is not `str`- or `int`-backed raises `SerDesError: Unsupported type` at the
+    checkpoint, after the step body has run. `IntEnum` behaves like `StrEnum` and returns an `int`.
+
 ## Sizing the alternative honestly
 
 | | Lines | Buys you |
