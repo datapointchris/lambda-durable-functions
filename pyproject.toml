@@ -1,0 +1,55 @@
+[project]
+name = "lambda-durable-functions"
+version = "0.1.0"
+description = "Lambda durable functions: a worked, tested reference implementation."
+# Lambda's Python runtime, not Glue's. The parent lakeworks floor of 3.11 exists
+# because Glue 5.0 ships 3.11; nothing here runs on Glue.
+requires-python = ">=3.13"
+dependencies = [
+    "boto3>=1.35",
+    "aws-durable-execution-sdk-python>=1.7.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "aws-durable-execution-sdk-python-testing>=1.2.1",
+    "pytest>=8.0",
+    "ruff",
+    "basedpyright",
+    "mypy",
+]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/landing_zone"]
+
+[tool.ruff]
+line-length = 110
+src = ["src", "tests"]
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B", "SIM", "PTH", "ARG"]
+
+[tool.ruff.format]
+quote-style = "single"
+
+[tool.pytest.ini_options]
+minversion = "8.0"
+testpaths = ["tests"]
+pythonpath = ["src", "tests"]
+
+# `standard` rather than basedpyright's `recommended` default, matching the rest
+# of the fleet. Named `pyright` so basedpyright and Pylance both read it.
+[tool.pyright]
+typeCheckingMode = "standard"
+include = ["src", "tests"]
+
+[tool.mypy]
+pretty = true
+# Unlike the fleet default, imports are not ignored. An unresolved
+# aws_durable_execution_sdk_python turns every decorated handler into Any and
+# silently hides the call-arity errors basedpyright reports.
+ignore_missing_imports = false
