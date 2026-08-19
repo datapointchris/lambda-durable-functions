@@ -20,7 +20,7 @@ from typing import Any, cast
 
 import boto3
 from aws_durable_execution_sdk_python import DurableContext, durable_execution
-from aws_durable_execution_sdk_python.concurrency.models import CompletionReason
+from aws_durable_execution_sdk_python.concurrency.models import BatchResult, CompletionReason
 from aws_durable_execution_sdk_python.config import (
     BatchedInput,
     CompletionConfig,
@@ -153,7 +153,7 @@ def lambda_handler(event: dict, context: DurableContext) -> dict:
         scores_key = batch_context.step(store, name='store')
         return batch_summary(index, scored['scored'], scored['rejected'], scores_key)
 
-    batch_result = context.map(
+    batch_result: BatchResult[dict[str, Any]] = context.map(
         batches,
         score_batch,
         name='score_batches',

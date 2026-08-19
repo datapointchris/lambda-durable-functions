@@ -106,9 +106,10 @@ def test_an_empty_landing_prefix_never_settles(clients):
     """
     _s3, glue, _lam = clients
 
-    with contextlib.suppress(TimeoutError), DurableFunctionTestRunner(
-        handler_module.lambda_handler
-    ) as runner:
+    with (
+        contextlib.suppress(TimeoutError),
+        DurableFunctionTestRunner(handler_module.lambda_handler) as runner,
+    ):
         runner.run(input=json.dumps(s3_event('landing/gone.csv')), timeout=5)
 
     assert glue.job_runs == []

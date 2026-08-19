@@ -53,3 +53,11 @@ pretty = true
 # aws_durable_execution_sdk_python turns every decorated handler into Any and
 # silently hides the call-arity errors basedpyright reports.
 ignore_missing_imports = false
+
+# boto3 ships no type information and no stub package is installed. Scoped to
+# boto3 rather than set globally: an unresolved aws_durable_execution_sdk_python
+# must still fail, because that import silently becoming Any is what hides the
+# call-arity errors basedpyright reports. See docs/typing-and-tooling.md.
+[[tool.mypy.overrides]]
+module = ["boto3", "boto3.*", "botocore", "botocore.*"]
+ignore_missing_imports = true

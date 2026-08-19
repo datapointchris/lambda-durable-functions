@@ -7,9 +7,11 @@ handler body, and only a checkpointed step is spared.
 """
 
 import json
+from typing import Any
 
 import pytest
 from aws_durable_execution_sdk_python import DurableContext, durable_execution
+from aws_durable_execution_sdk_python.concurrency.models import BatchResult
 from aws_durable_execution_sdk_python.config import ItemBatcher, MapConfig
 from aws_durable_execution_sdk_python_testing import DurableFunctionTestRunner
 from aws_durable_execution_sdk_python_testing.exceptions import DurableFunctionsTestError
@@ -348,7 +350,7 @@ def batcher_probe(event: dict, context: DurableContext) -> dict:
 
         return child_context.step(record, name='record')
 
-    result = context.map(
+    result: BatchResult[dict[str, Any]] = context.map(
         event['items'],
         per_item,
         name='probe',

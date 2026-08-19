@@ -100,9 +100,7 @@ def lambda_handler(event: dict, context: DurableContext) -> dict:
     if not context.step(check_leader, name='leader'):
         return {'status': 'ignored'}
 
-    triggering_keys = {
-        unquote_plus(record['s3']['object']['key']) for record in event.get('Records', [])
-    }
+    triggering_keys = {unquote_plus(record['s3']['object']['key']) for record in event.get('Records', [])}
     if not triggering_keys:
         return {'status': 'no-trigger'}
 

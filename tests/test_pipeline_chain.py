@@ -85,9 +85,7 @@ def test_a_throttle_is_transient_and_a_schema_mismatch_is_not():
 
 
 def test_the_staging_key_partitions_by_dataset_and_run_date():
-    assert staging_key('staging/', 'orders', RUN_DATE) == (
-        f'staging/orders/dt={RUN_DATE}/part-0000.jsonl'
-    )
+    assert staging_key('staging/', 'orders', RUN_DATE) == (f'staging/orders/dt={RUN_DATE}/part-0000.jsonl')
 
 
 def test_a_run_date_that_is_not_a_date_is_rejected():
@@ -196,9 +194,7 @@ def test_the_handoff_names_the_load_function_and_carries_the_staged_keys(
     assert function_name == handler_module.LOAD_FUNCTION_NAME
     assert sent['runDate'] == RUN_DATE
     assert sent['datasets']['orders'] == staging_key('staging/', 'orders', RUN_DATE)
-    assert sent['rowCount'] == len(sources.rds.rows) + len(sources.s3.keys) + len(
-        sources.dynamodb.items
-    )
+    assert sent['rowCount'] == len(sources.rds.rows) + len(sources.s3.keys) + len(sources.dynamodb.items)
 
 
 def test_two_dead_sources_exceed_the_tolerance_and_nothing_is_handed_off(

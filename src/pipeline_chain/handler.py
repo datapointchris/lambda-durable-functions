@@ -28,6 +28,7 @@ level. Tests reach every seam with `monkeypatch.setattr`.
 import json
 import os
 from collections.abc import Sequence
+from typing import Any
 
 import boto3
 from aws_durable_execution_sdk_python import (
@@ -200,9 +201,7 @@ def lambda_handler(event: dict, context: DurableContext) -> dict:
         name='extract_sources',
         config=ParallelConfig(
             max_concurrency=MAX_CONCURRENT_EXTRACTS,
-            completion_config=CompletionConfig(
-                tolerated_failure_count=TOLERATED_EXTRACT_FAILURES
-            ),
+            completion_config=CompletionConfig(tolerated_failure_count=TOLERATED_EXTRACT_FAILURES),
         ),
     )
 
@@ -210,7 +209,7 @@ def lambda_handler(event: dict, context: DurableContext) -> dict:
     if extracts.completion_reason is CompletionReason.FAILURE_TOLERANCE_EXCEEDED:
         return {'runDate': run_date, 'mode': 'abandoned', 'missing': payload['missing']}
 
-    loaded = context.invoke(
+    loaded: dict[str, Any] = context.invoke(
         LOAD_FUNCTION_NAME,
         payload,
         name='handoff',

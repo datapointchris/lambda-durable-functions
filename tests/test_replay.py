@@ -74,4 +74,4 @@ def test_a_replayed_step_returns_its_checkpoint_rather_than_re_running(clients):
     # mean a checkpointed step body executed again on replay.
     assert s3.paginate_calls == 2
     assert result.result is not None
-    assert json.loads(result.result)["objects"] == 2
+    assert json.loads(result.result)['objects'] == 2

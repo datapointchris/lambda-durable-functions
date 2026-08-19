@@ -169,9 +169,7 @@ def lambda_handler(event: dict, context: DurableContext) -> dict:
 
     def fulfil(stage: DurableContext) -> dict:
         def charge_card(step_context: StepContext) -> str:
-            charge_id = payments_client.charge(
-                idempotency_key, order_total_cents(order), order.currency
-            )
+            charge_id = payments_client.charge(idempotency_key, order_total_cents(order), order.currency)
             step_context.logger.info('charged %s', charge_id)
             return charge_id
 

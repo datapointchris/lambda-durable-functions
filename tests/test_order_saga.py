@@ -59,8 +59,7 @@ def test_an_interrupted_charge_is_not_retried_even_on_the_first_attempt():
 
 def test_a_charge_that_failed_outright_is_retried_up_to_the_attempt_limit():
     decisions = [
-        should_retry_charge(interrupted=False, attempts_made=attempt, max_attempts=3)
-        for attempt in (1, 2, 3)
+        should_retry_charge(interrupted=False, attempts_made=attempt, max_attempts=3) for attempt in (1, 2, 3)
     ]
 
     assert decisions == [True, True, False]

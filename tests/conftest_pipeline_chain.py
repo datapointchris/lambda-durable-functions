@@ -245,7 +245,5 @@ def swap_sources(monkeypatch) -> Sources:
 def register_load_function(monkeypatch) -> RecordingInvokeProcessor:
     """Give the harness a chained-invoke processor and record what it receives."""
     processor = RecordingInvokeProcessor(load_warehouse)
-    monkeypatch.setitem(
-        OperationTransformer._DEFAULT_PROCESSORS, OperationType.CHAINED_INVOKE, processor
-    )
+    monkeypatch.setitem(OperationTransformer._DEFAULT_PROCESSORS, OperationType.CHAINED_INVOKE, processor)
     return processor
