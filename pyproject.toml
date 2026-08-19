@@ -11,7 +11,9 @@ dependencies = [
 ]
 
 [project.optional-dependencies]
+cattrs = ["cattrs>=24"]
 dev = [
+    "cattrs>=24",
     "aws-durable-execution-sdk-python-testing>=1.2.1",
     "pytest>=8.0",
     "ruff",

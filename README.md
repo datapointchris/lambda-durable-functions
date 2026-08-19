@@ -5,7 +5,7 @@ test suite, and the SDK internals that are not in the documentation.
 
 Read the docs at [docs.ichrisbirch.com/lambda-durable-functions](https://docs.ichrisbirch.com/lambda-durable-functions/).
 
-## Six worked examples
+## Seven worked examples
 
 Each is a complete, tested Lambda in the conventional shape — module-scope clients, module-scope
 configuration, `lambda_handler(event, context)` at module level. None restructures the handler to be
@@ -19,6 +19,7 @@ testable; tests reach every seam with `monkeypatch.setattr`.
 | `approval_gate` | `wait_for_callback`, callback timeout and heartbeat, approve / reject / lapse |
 | `flaky_api_sync` | Custom `retry_strategy`, retryable versus permanent errors, `with_retry`, jittered backoff |
 | `pipeline_chain` | `context.parallel`, `ParallelBranch`, `context.invoke`, nested operation history |
+| `nested_payloads` | A nested dataclass through a checkpoint and through S3, sharing one codec |
 
 | Document | Answers |
 |---|---|
@@ -26,6 +27,7 @@ testable; tests reach every seam with `monkeypatch.setattr`.
 | [docs/steps.md](docs/steps.md) | `context.step`, which spelling to write, replay-safe logging, `StepConfig` |
 | [docs/waits.md](docs/waits.md) | `wait`, `wait_for_condition`, `wait_for_callback`, backoff and jitter |
 | [docs/fan-out.md](docs/fan-out.md) | `map`, `parallel`, child contexts, `invoke`, partial failure |
+| [docs/serialization.md](docs/serialization.md) | Nested dataclasses through a checkpoint, and the same object in S3 |
 | [docs/testing.md](docs/testing.md) | The local runner, the full assertion surface, callbacks, harness limits |
 | [docs/sdk-internals.md](docs/sdk-internals.md) | What the shipped source does, read rather than documented |
 | [docs/typing-and-tooling.md](docs/typing-and-tooling.md) | The missing-parameter diagnostic, and mypy's silence |

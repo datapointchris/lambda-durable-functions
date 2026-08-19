@@ -16,6 +16,7 @@ Source: [datapointchris/lambda-durable-functions](https://github.com/datapointch
 | [Steps](steps.md) | `context.step`, the three spellings and which to write, replay-safe logging, what a step costs, `StepConfig` in full |
 | [Waits and Suspension](waits.md) | `wait`, `wait_for_condition`, `wait_for_callback`, backoff and jitter |
 | [Fan-out and Composition](fan-out.md) | `map`, `parallel`, child contexts, `invoke`, and partial-failure tolerance |
+| [Serialization](serialization.md) | Nested dataclasses through a checkpoint, and the same object in S3 without writing the conversion twice |
 | [Testing](testing.md) | The local runner, the full assertion surface, driving callbacks, and the harness limits |
 | [SDK Internals](sdk-internals.md) | What the shipped source actually does, read rather than documented |
 | [Typing and Tooling](typing-and-tooling.md) | Why basedpyright reports a missing parameter and mypy stays silent |
@@ -25,7 +26,7 @@ Deployment, Terraform, versions and aliases, and the S3 trigger wiring are in th
 [Lambda Durable Functions deployment guide](https://docs.ichrisbirch.com/aws/lambda-durable-functions/).
 This site covers the SDK and the code; that one covers getting it into an account.
 
-## Six worked examples
+## Seven worked examples
 
 Each is a complete, tested Lambda in the conventional shape — module-scope clients, module-scope
 configuration, `lambda_handler(event, context)` at module level. None of them restructures the
@@ -39,6 +40,7 @@ handler to be testable.
 | `approval_gate` | `wait_for_callback`, callback timeout and heartbeat, approve / reject / lapse |
 | `flaky_api_sync` | Custom `retry_strategy`, retryable versus permanent errors, `with_retry`, backoff with jitter |
 | `pipeline_chain` | `context.parallel`, `ParallelBranch`, `context.invoke`, nested operation history |
+| `nested_payloads` | A nested dataclass through a checkpoint and through S3, sharing one codec |
 
 ## The shortest useful summary
 
@@ -51,7 +53,8 @@ handler to be testable.
 - **A step costs two checkpoints**, one of them blocking, plus durable state for its return value.
   Pure computation does not belong in one and a log line never does.
 - **The default codec carries a closed set of types.** A dataclass raises `SerDesError` at
-  checkpoint time, after the body has already run.
+  checkpoint time, after the body has already run. `asdict` plus the constructor fixes the top level
+  and leaves nested types as dicts, which fails silently. See [Serialization](serialization.md).
 - **Call counts are the assertion that matters.** The handler body replays; step bodies do not. A
   side effect that escaped its step shows up as a count of two. See [Testing](testing.md).
 
