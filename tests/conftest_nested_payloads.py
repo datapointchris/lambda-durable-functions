@@ -6,6 +6,7 @@ import os
 
 os.environ.setdefault('AWS_DEFAULT_REGION', 'us-east-2')
 os.environ.setdefault('MANIFEST_BUCKET', 'test-lake')
+os.environ.setdefault('LANDING_BUCKET', 'test-lake')
 os.environ.setdefault('MANIFEST_PREFIX', 'manifests/')
 os.environ.setdefault('SOURCE_PREFIX', 'incoming/')
 

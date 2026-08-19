@@ -108,8 +108,36 @@ def load_manifest(s3_client, bucket, key) -> Manifest:
     cannot, so `to_dict` converts. If a payload never reaches S3, `to_dict` can leave the `datetime`
     alone.
 
-That is `src/nested_payloads/minimal.py`, 21 lines of conversion across two types. Everything below
-is what to reach for when that stops being enough.
+Used from a handler, with no `StepConfig` and no `serdes=` anywhere:
+
+```python
+@durable_execution
+def lambda_handler(event: dict, context: DurableContext) -> dict:
+
+    def discover(step_context: StepContext) -> dict:
+        files = list_tracked_files()
+        manifest = Manifest(status_for(files, expected), LANDING_BUCKET, files)
+        step_context.logger.info('found %d file(s), status=%s', len(files), manifest.status)
+        return manifest.to_dict()
+
+    manifest = Manifest.from_dict(context.step(discover, name='discover'))
+
+    def persist(step_context: StepContext) -> str:
+        key = save_manifest(s3_client, LANDING_BUCKET, f'{MANIFEST_PREFIX}{run_id}.json', manifest)
+        step_context.logger.info('saved %s', key)
+        return key
+
+    return {
+        'status': manifest.status,
+        'files': len(manifest.files),
+        'manifestKey': context.step(persist, name='persist'),
+    }
+```
+
+The types are `src/nested_payloads/minimal.py` — 21 lines of conversion across two types — and the
+handler is `src/nested_payloads/minimal_handler.py`. `src/nested_payloads/handler.py` is the same
+job written with the general codec, for comparison. Everything below is what to reach for when the
+small version stops being enough.
 
 ## `StrEnum` needs nothing, but comes back a plain `str`
 

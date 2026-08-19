@@ -169,3 +169,76 @@ def test_an_unknown_status_is_rejected_on_rebuild():
 
     with pytest.raises(ValueError, match='not a valid Status'):
         Manifest.from_dict(payload)
+
+
+# --- the same approach as a real handler module ---
+
+
+@pytest.fixture
+def minimal_handler(monkeypatch):
+    """Swap the module-scope client, exactly as the other examples do."""
+    import datetime as dt
+
+    from nested_payloads import minimal_handler as handler_module
+
+    fake = FakeS3(
+        [
+            {
+                'Contents': [
+                    {
+                        'Key': 'incoming/a.csv',
+                        'Size': 120,
+                        'LastModified': dt.datetime(2026, 8, 19, 9, 0, tzinfo=dt.UTC),
+                    }
+                ]
+            }
+        ]
+    )
+    monkeypatch.setattr(handler_module, 's3_client', fake)
+    return handler_module, fake
+
+
+def test_the_minimal_handler_needs_no_step_config_anywhere(minimal_handler):
+    handler_module, fake = minimal_handler
+
+    with DurableFunctionTestRunner(handler_module.lambda_handler) as runner:
+        result = runner.run(input=json.dumps({'expectedFiles': 1}), timeout=30)
+
+    assert result.result is not None
+    payload = json.loads(result.result)
+    assert payload['files'] == 1
+    assert payload['status'] == Status.READY
+
+
+def test_the_strenum_survives_the_round_trip_through_s3(minimal_handler):
+    handler_module, fake = minimal_handler
+
+    with DurableFunctionTestRunner(handler_module.lambda_handler) as runner:
+        result = runner.run(input=json.dumps({'expectedFiles': 1}), timeout=30)
+
+    assert result.result is not None
+    key = json.loads(result.result)['manifestKey']
+    restored = load_manifest(fake, handler_module.LANDING_BUCKET, key)
+
+    assert isinstance(restored.status, Status)
+    assert restored.status is Status.READY
+    assert isinstance(restored.files[0].status, Status)
+
+
+def test_a_partial_drop_is_reported_as_partial(minimal_handler):
+    handler_module, _fake = minimal_handler
+
+    with DurableFunctionTestRunner(handler_module.lambda_handler) as runner:
+        result = runner.run(input=json.dumps({'expectedFiles': 3}), timeout=30)
+
+    assert result.result is not None
+    assert json.loads(result.result)['status'] == Status.PARTIAL
+
+
+def test_the_manifest_is_written_once_despite_replay(minimal_handler):
+    handler_module, fake = minimal_handler
+
+    with DurableFunctionTestRunner(handler_module.lambda_handler) as runner:
+        runner.run(input=json.dumps({'expectedFiles': 1}), timeout=30)
+
+    assert fake.put_calls == 1
