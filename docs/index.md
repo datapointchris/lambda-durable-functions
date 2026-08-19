@@ -1,8 +1,10 @@
 # Lambda Durable Functions
 
-A worked, tested reference for AWS Lambda durable functions in Python — what the SDK actually does,
-read from the shipped source rather than the documentation, with runnable code and a passing test
-suite behind every claim.
+A worked reference for AWS Lambda durable functions in Python. Every claim here is backed by code in
+this repository that runs, and by the shipped SDK source rather than the documentation.
+
+Measured against `aws-durable-execution-sdk-python` **1.7.0** and
+`aws-durable-execution-sdk-python-testing` **1.2.1**, on 2026-08-19.
 
 Source: [datapointchris/lambda-durable-functions](https://github.com/datapointchris/lambda-durable-functions).
 
@@ -10,54 +12,57 @@ Source: [datapointchris/lambda-durable-functions](https://github.com/datapointch
 
 | Page | Answers |
 |---|---|
-| [SDK Internals](sdk-internals.md) | How `@durable_step` works, what a step costs, why logs repeat, what serializes, how `wait_for_condition` threads state |
-| [Testing](testing.md) | How to test a durable Lambda without changing its shape |
-| [Typing and Tooling](typing-and-tooling.md) | Why basedpyright reports a missing parameter, and why mypy stays silent about the same cause |
+| [Concepts](concepts.md) | What a durable function is, why the handler body re-runs, and the determinism rules |
+| [Steps](steps.md) | `context.step`, the three spellings and which to write, replay-safe logging, what a step costs, `StepConfig` in full |
+| [Waits and Suspension](waits.md) | `wait`, `wait_for_condition`, `wait_for_callback`, backoff and jitter |
+| [Fan-out and Composition](fan-out.md) | `map`, `parallel`, child contexts, `invoke`, and partial-failure tolerance |
+| [Testing](testing.md) | The local runner, the full assertion surface, driving callbacks, and the harness limits |
+| [SDK Internals](sdk-internals.md) | What the shipped source actually does, read rather than documented |
+| [Typing and Tooling](typing-and-tooling.md) | Why basedpyright reports a missing parameter and mypy stays silent |
+| [Reference](reference.md) | Every method, config and exception as a lookup table, plus annotated external links |
 
 Deployment, Terraform, versions and aliases, and the S3 trigger wiring are in the separate
-[Lambda Durable Functions deployment guide](https://docs.ichrisbirch.com/aws/lambda-durable-functions/). This site covers
-the SDK and the code; that one covers getting it into an account.
+[Lambda Durable Functions deployment guide](https://docs.ichrisbirch.com/aws/lambda-durable-functions/).
+This site covers the SDK and the code; that one covers getting it into an account.
 
-## The example
+## Six worked examples
 
-`landing_zone` is a landing-zone trigger. An upstream feed writes objects into an S3 prefix over
-several minutes. Starting one job per object would be wasteful and would read a partial drop, so it
-waits until nothing new has landed for a quiet period, freezes a manifest of what arrived, and
-starts a single ingest job for it.
+Each is a complete, tested Lambda in the conventional shape — module-scope clients, module-scope
+configuration, `lambda_handler(event, context)` at module level. None of them restructures the
+handler to be testable.
 
-```text
-S3 object lands ──► one invocation per object
-                         │
-                    leader election ── not oldest? ──► exit
-                         │
-                    settle poll ── quiet for 5 min? ──┐
-                         ▲                            │ no, wait and re-check
-                         └────────────────────────────┘
-                         │ yes
-                    freeze manifest   ← dataclass, needs a custom SerDes
-                         │
-                    write manifest + start ingest job
+| Example | Demonstrates |
+|---|---|
+| `landing_zone` | `wait_for_condition` settle polling, a dataclass that needs a custom `SerDes`, leader election across many triggers |
+| `order_saga` | `AT_MOST_ONCE_PER_RETRY` vs the default, `run_in_child_context` as a failure unit, compensation |
+| `batch_scoring` | `context.map`, `max_concurrency`, `CompletionConfig` failure tolerance, reading `BatchResult` |
+| `approval_gate` | `wait_for_callback`, callback timeout and heartbeat, approve / reject / lapse |
+| `flaky_api_sync` | Custom `retry_strategy`, retryable versus permanent errors, `with_retry`, backoff with jitter |
+| `pipeline_chain` | `context.parallel`, `ParallelBranch`, `context.invoke`, nested operation history |
+
+## The shortest useful summary
+
+- **`@durable_step` curries.** A decorated call returns a closure and runs nothing. Without
+  `context.step(...)` around it, the step never executes and nothing is checkpointed.
+- **Write a nested `def`, not a lambda.** A lambda cannot hold two statements, so it cannot both do
+  the work and log. The `def` receives `step_context` as its only parameter. See [Steps](steps.md).
+- **A log inside a step body cannot repeat.** A succeeded checkpoint short-circuits the body.
+  `context.logger` in the handler is different — it only suppresses while the context is replaying.
+- **A step costs two checkpoints**, one of them blocking, plus durable state for its return value.
+  Pure computation does not belong in one and a log line never does.
+- **The default codec carries a closed set of types.** A dataclass raises `SerDesError` at
+  checkpoint time, after the body has already run.
+- **Call counts are the assertion that matters.** The handler body replays; step bodies do not. A
+  side effect that escaped its step shows up as a count of two. See [Testing](testing.md).
+
+## Running it
+
+```bash
+uv venv && uv pip install -e '.[dev]'
+.venv/bin/python -m pytest -q         # 147 passed, 1 xfailed
+.venv/bin/python -m ruff check .
+.venv/bin/python -m basedpyright
 ```
 
-Four things fall out of that shape, and each is a thing worth knowing:
-
-- **Leader election**, because a drop of forty files triggers forty invocations that must collapse
-  into one run. Reserved concurrency cannot express it — it throttles, so the extras retry into a
-  DLQ instead of being ignored.
-- **A `wait_for_condition` poll**, whose stop condition is computed from the listing's own
-  timestamps rather than from accumulated state.
-- **A dataclass return**, which the default checkpoint codec refuses until you supply a `SerDes`.
-- **Two side effects that must not repeat**, which is what the replay tests actually assert.
-
-## Findings
-
-- `@durable_step` curries. A decorated call returns a closure and runs nothing without
-  `context.step(...)` around it.
-- A step costs two checkpoints and the success one blocks. Pure computation does not belong in one,
-  and a log line never does.
-- `context.logger` suppresses only while the context is replaying. Past the last checkpointed
-  operation it prints on every pass.
-- The default codec carries a closed set of types, and a dataclass is not among them.
-- The released local test runner drops `wait_for_condition` polling state, so a poll that stops on
-  accumulated state never terminates in tests.
-- A conventional handler is fully testable. Nothing about its shape has to change.
+The suite takes a little over two minutes. Almost all of it is real waits — the released test runner
+has no time skipping.

@@ -90,6 +90,11 @@ validation:
 
 nav:
   - Home: index.md
-  - SDK Internals: sdk-internals.md
+  - Concepts: concepts.md
+  - Steps: steps.md
+  - Waits and Suspension: waits.md
+  - Fan-out and Composition: fan-out.md
   - Testing: testing.md
+  - SDK Internals: sdk-internals.md
   - Typing and Tooling: typing-and-tooling.md
+  - Reference: reference.md
