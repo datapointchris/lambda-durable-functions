@@ -43,15 +43,15 @@ minversion = "8.0"
 testpaths = ["tests"]
 pythonpath = ["src", "tests"]
 
-# `standard` rather than basedpyright's `recommended` default, matching the rest
-# of the fleet. Named `pyright` so basedpyright and Pylance both read it.
+# `standard` rather than basedpyright's `recommended` default, matching the
+# shared default. Named `pyright` so basedpyright and Pylance both read it.
 [tool.pyright]
 typeCheckingMode = "standard"
 include = ["src", "tests"]
 
 [tool.mypy]
 pretty = true
-# Unlike the fleet default, imports are not ignored. An unresolved
+# Unlike the shared default, imports are not ignored. An unresolved
 # aws_durable_execution_sdk_python turns every decorated handler into Any and
 # silently hides the call-arity errors basedpyright reports.
 ignore_missing_imports = false

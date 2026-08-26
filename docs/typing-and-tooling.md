@@ -38,7 +38,7 @@ uv add aws-durable-execution-sdk-python
 
 ## mypy stays silent, so the two checkers disagree from one cause
 
-The fleet default sets `ignore_missing_imports = true`, which turns the unresolved import into
+The shared default sets `ignore_missing_imports = true`, which turns the unresolved import into
 `Any` and suppresses the whole chain. Measured on the same file that basedpyright rejected:
 
 ```bash
@@ -60,7 +60,7 @@ shadow a correctly typed dependency.
 Two codes, both legitimate, neither needing a suppression:
 
 | Code | Fires on | Fix |
-|---|---|---|
+| --- | --- | --- |
 | `ARG001` | `def build_manifest(step_context, ...)` where the body ignores it | prefix `_step_context` |
 | `ARG005` | `lambda step_context: do_thing()` | use `lambda _:` |
 
@@ -79,4 +79,4 @@ typeCheckingMode = "standard"
 select = ["E", "F", "I", "UP", "B", "SIM", "PTH", "ARG"]
 ```
 
-`standard` rather than basedpyright's `recommended` default, matching the rest of the fleet.
+`standard` rather than basedpyright's `recommended` default, matching the shared default.
