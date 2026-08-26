@@ -26,7 +26,7 @@ jobs:
       - run: uv sync --all-extras --dev
 
       # uvx, not `uv run` — the latter resolves ruff from the repo's own
-      # dependencies, and a repo treating ruff as a fleet tool rather than a
+      # dependencies, and a repo treating ruff as an installed tool rather than a
       # project dependency does not declare it. The version is the one the
       # pre-commit hook pins, so the two cannot disagree about a finding.
       - run: uvx ruff@0.12.5 check .
