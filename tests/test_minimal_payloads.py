@@ -242,3 +242,59 @@ def test_the_manifest_is_written_once_despite_replay(minimal_handler):
         runner.run(input=json.dumps({'expectedFiles': 1}), timeout=30)
 
     assert fake.put_calls == 1
+
+
+# --- convert once, then close over it ---
+
+
+def test_later_steps_use_the_dataclass_without_converting_again(minimal_handler):
+    """The conversion belongs at a step's return boundary, nowhere else.
+
+    A step that merely uses the manifest closes over it from the handler scope.
+    Returning it from every step, and rebuilding it at every call site, is the
+    back-and-forth this avoids.
+    """
+    handler_module, fake = minimal_handler
+    conversions: list[int] = []
+    original = Manifest.from_dict.__func__
+    effects: list[str] = []
+
+    def counting(cls, payload):
+        conversions.append(1)
+        return original(cls, payload)
+
+    Manifest.from_dict = classmethod(counting)
+    try:
+
+        @durable_execution
+        def lambda_handler(_event: dict, context: DurableContext) -> dict:
+            def load(step_context: StepContext) -> dict:
+                step_context.logger.info('loaded')
+                return NESTED.to_dict()
+
+            manifest = Manifest.from_dict(context.step(load, name='load'))
+
+            def validate(_step_context: StepContext) -> int:
+                effects.append('validate')
+                return sum(f.size for f in manifest.files)
+
+            total = context.step(validate, name='validate')
+
+            def notify(_step_context: StepContext) -> str:
+                effects.append('notify')
+                return f'{manifest.status}:{len(manifest.files)}'
+
+            return {'total': total, 'tag': context.step(notify, name='notify')}
+
+        with DurableFunctionTestRunner(lambda_handler) as runner:
+            result = runner.run(input='{}', timeout=30)
+    finally:
+        Manifest.from_dict = classmethod(original)
+
+    assert result.result is not None
+    payload = json.loads(result.result)
+    assert payload['total'] == 200
+    assert payload['tag'] == 'ready:2'
+    # One conversion per handler entry, and each step body ran once.
+    assert conversions == [1]
+    assert effects == ['validate', 'notify']
