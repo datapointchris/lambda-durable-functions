@@ -34,9 +34,21 @@ src = ["src", "tests"]
 
 [tool.ruff.lint]
 select = ["E", "F", "I", "UP", "B", "SIM", "PTH", "ARG"]
+ignore = [
+    "SIM108",  # ternary operator — often less readable
+]
 
+[tool.ruff.lint.isort]
+force-single-line = true
+
+[tool.ruff.lint.per-file-ignores]
+"__init__.py" = ["F401"]
 [tool.ruff.format]
 quote-style = "single"
+indent-style = "space"
+skip-magic-trailing-comma = false
+line-ending = "auto"
+docstring-code-format = true
 
 [tool.pytest.ini_options]
 minversion = "8.0"
@@ -45,9 +57,11 @@ pythonpath = ["src", "tests"]
 
 # `standard` rather than basedpyright's `recommended` default, matching the
 # shared default. Named `pyright` so basedpyright and Pylance both read it.
+verbosity_assertions = 2
 [tool.pyright]
 typeCheckingMode = "standard"
 include = ["src", "tests"]
+analyzeUnannotatedFunctions = true
 
 [tool.mypy]
 pretty = true
@@ -60,6 +74,35 @@ ignore_missing_imports = false
 # boto3 rather than set globally: an unresolved aws_durable_execution_sdk_python
 # must still fail, because that import silently becoming Any is what hides the
 # call-arity errors basedpyright reports. See docs/typing-and-tooling.md.
+check_untyped_defs = false
+warn_return_any = false
 [[tool.mypy.overrides]]
 module = ["boto3", "boto3.*", "botocore", "botocore.*"]
 ignore_missing_imports = true
+
+[tool.codespell]
+check-filenames = true
+
+[tool.forge]
+# Keys the shared toolchain standard owns, written by its generator.
+# Dropping one from the template removes it here on the next sync; a key absent
+# from this list belongs to the project and is never touched. Do not hand-edit.
+managed = [
+    ["ruff", "format", "quote-style"],
+    ["ruff", "format", "indent-style"],
+    ["ruff", "format", "skip-magic-trailing-comma"],
+    ["ruff", "format", "line-ending"],
+    ["ruff", "format", "docstring-code-format"],
+    ["ruff", "lint", "ignore"],
+    ["ruff", "lint", "isort", "force-single-line"],
+    ["ruff", "lint", "per-file-ignores", "__init__.py"],
+    ["mypy", "pretty"],
+    ["mypy", "check_untyped_defs"],
+    ["mypy", "warn_return_any"],
+    ["pyright", "typeCheckingMode"],
+    ["pyright", "analyzeUnannotatedFunctions"],
+    ["codespell", "check-filenames"],
+    ["pytest", "ini_options", "verbosity_assertions"],
+    ["pytest", "ini_options", "minversion"],
+    ["pytest", "ini_options", "testpaths"],
+]
