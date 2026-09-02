@@ -1,4 +1,4 @@
-# forge-toolchain: 19
+# forge-toolchain: 20
 name: CI
 
 on:
@@ -35,10 +35,9 @@ jobs:
 
       # Declaring mypy as a dependency is the opt-in, and `uv run` is the same
       # invocation the pre-commit hook uses, so a repo passing locally passes
-      # here. This used to test for a [tool.mypy] section, which stopped
-      # meaning anything once the standard pyproject template wrote that
-      # section into every repo — including infra repos that are not Python
-      # projects and have nothing importable to check.
+      # here. A [tool.mypy] section is not the opt-in: the standard pyproject
+      # template writes one into every repo, infra repos included, and those
+      # have nothing importable to check.
       # Tested by import rather than `mypy --version`: `uv run` falls back to
       # PATH, so a machine with mypy installed globally reports it present in a
       # repo that never declared it, and the check would pass locally while
