@@ -3,7 +3,8 @@
 Everything here is callable from a plain pytest test with plain dicts.
 """
 
-from collections.abc import Iterator, Sequence
+from collections.abc import Iterator
+from collections.abc import Sequence
 from dataclasses import dataclass
 
 RETRYABLE_STATUS_CODES = frozenset({408, 425, 429, 500, 502, 503, 504})

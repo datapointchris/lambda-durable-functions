@@ -94,7 +94,7 @@ def test_a_replayed_step_returns_its_checkpoint_rather_than_re_running(clients):
 `DurableFunctionTestResult`, so assertions written against one work against another.
 
 | Runner | Drives | AWS | Reach for it when |
-|---|---|---|---|
+| --- | --- | --- | --- |
 | `DurableFunctionTestRunner` | The real runtime, in-process | No | Always, unless a row below applies |
 | `DurableChildContextTestRunner` | One `@durable_with_child_context` block | No | A block stands on its own |
 | `DurableFunctionCloudTestRunner` | A deployed function, over boto3 | Yes | The harness cannot model it |
@@ -401,11 +401,11 @@ def saga_clients(monkeypatch):
 `runner.run()` returns a frozen `DurableFunctionTestResult` with four fields.
 
 | Field | Type | What it holds |
-|---|---|---|
+| --- | --- | --- |
 | `status` | `InvocationStatus` | `SUCCEEDED`, `FAILED`, `PENDING`, `RETRY` — the last two are internal |
 | `operations` | `list[Operation]` | **Top-level operations only, in execution order** |
-| `result` | `OperationPayload \| None` | The handler's return value, serialized. `None` when it failed |
-| `error` | `ErrorObject \| None` | `.message`, `.type`, `.data`, `.stack_trace` |
+| `result` | `OperationPayload` or `None` | The handler's return value, serialized. `None` when it failed |
+| `error` | `ErrorObject` or `None` | `.message`, `.type`, `.data`, `.stack_trace` |
 
 `OperationPayload` is a `TypeAlias` for `str`. So `result.result` is a string or `None`, and
 basedpyright rejects `json.loads(result.result)` until it is narrowed. Every test module in this
@@ -460,7 +460,7 @@ Eight of them sit on `DurableFunctionTestResult`. `ContextOperation` carries the
 and casts the hit to a concrete operation class.
 
 | Accessor | Returns | Raises when the name is absent |
-|---|---|---|
+| --- | --- | --- |
 | `get_operation_by_name(name)` | `Operation` | `DurableFunctionsTestError` |
 | `get_step(name)` | `StepOperation` | `DurableFunctionsTestError` |
 | `get_wait(name)` | `WaitOperation` | `DurableFunctionsTestError` |
@@ -525,7 +525,7 @@ All operations share `operation_id`, `operation_type`, `status`, `parent_id`, `n
 `start_timestamp` and `end_timestamp`.
 
 | `OperationType` | Class | Adds to the common fields |
-|---|---|---|
+| --- | --- | --- |
 | `STEP` | `StepOperation` | `attempt`, `next_attempt_timestamp`, `result`, `error`, `child_operations` |
 | `WAIT` | `WaitOperation` | `scheduled_end_timestamp` |
 | `CONTEXT` | `ContextOperation` | `child_operations`, `result`, `error` |
@@ -972,7 +972,7 @@ def test_a_retried_label_does_not_charge_the_card_again(saga_clients):
 
     result = run(checkout_event())
 
-    stage = result.get_context('fulfilment')
+    stage = result.get_context('fulfillment')
     assert stage.get_step('charge_card').attempt == 1
     assert stage.get_step('buy_label').attempt == 2
     assert payload(result)['status'] == 'placed'
@@ -1124,7 +1124,7 @@ def test_the_handler_body_really_does_re_enter(clients, monkeypatch):
 The six guards in this repository, and the function each one wraps:
 
 | Test file | Wrapped function | Assertion |
-|---|---|---|
+| --- | --- | --- |
 | `tests/test_replay.py` | `is_quiet` | `assert entries` |
 | `tests/test_order_saga.py` | `parse_order` | `assert len(entries) > 1` |
 | `tests/test_batch_scoring.py` | `group_into_batches` | `assert len(entries) > 1` |

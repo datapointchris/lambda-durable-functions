@@ -11,7 +11,7 @@ Source: [datapointchris/lambda-durable-functions](https://github.com/datapointch
 ## Start here
 
 | Page | Answers |
-|---|---|
+| --- | --- |
 | [Concepts](concepts.md) | What a durable function is, why the handler body re-runs, and the determinism rules |
 | [Steps](steps.md) | `context.step`, the three spellings and which to write, replay-safe logging, what a step costs, `StepConfig` in full |
 | [Waits and Suspension](waits.md) | `wait`, `wait_for_condition`, `wait_for_callback`, backoff and jitter |
@@ -33,7 +33,7 @@ configuration, `lambda_handler(event, context)` at module level. None of them re
 handler to be testable.
 
 | Example | Demonstrates |
-|---|---|
+| --- | --- |
 | `landing_zone` | `wait_for_condition` settle polling, a dataclass that needs a custom `SerDes`, leader election across many triggers |
 | `order_saga` | `AT_MOST_ONCE_PER_RETRY` vs the default, `run_in_child_context` as a failure unit, compensation |
 | `batch_scoring` | `context.map`, `max_concurrency`, `CompletionConfig` failure tolerance, reading `BatchResult` |

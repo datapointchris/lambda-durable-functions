@@ -8,12 +8,17 @@ body has already run. These are the options, in the order worth trying them.
 import json
 from dataclasses import asdict
 from datetime import datetime
-from typing import Any, Protocol, runtime_checkable
+from typing import Any
+from typing import Protocol
+from typing import runtime_checkable
 
 from aws_durable_execution_sdk_python.exceptions import SerDesError
-from aws_durable_execution_sdk_python.serdes import ExtendedTypeSerDes, SerDes, SerDesContext
+from aws_durable_execution_sdk_python.serdes import ExtendedTypeSerDes
+from aws_durable_execution_sdk_python.serdes import SerDes
+from aws_durable_execution_sdk_python.serdes import SerDesContext
 
-from nested_payloads.codec import structure, unstructure
+from nested_payloads.codec import structure
+from nested_payloads.codec import unstructure
 
 
 @runtime_checkable
@@ -44,9 +49,7 @@ class JsonSerDes(SerDes):
         try:
             return json.dumps(self._to_payload(value), separators=(',', ':'))
         except (TypeError, ValueError) as exc:
-            msg = (
-                f'cannot serialize {type(value).__name__} for operation {serdes_context.operation_id}: {exc}'
-            )
+            msg = f'cannot serialize {type(value).__name__} for operation {serdes_context.operation_id}: {exc}'
             raise SerDesError(msg) from exc
 
     def deserialize(self, data: str, serdes_context: SerDesContext) -> Any:

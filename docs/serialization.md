@@ -12,7 +12,7 @@ tests are `src/nested_payloads/` and `tests/test_nested_payloads.py`.
 enum is the complete list:
 
 | Carried |
-|---|
+| --- |
 | `None` `str` `int` `float` `bool` `bytes` `UUID` `Decimal` `datetime` `date` `tuple` `list` `dict` `BatchResult` |
 
 A dataclass is not among them:
@@ -147,7 +147,7 @@ ordinary JSON string. Nothing has to be configured. What comes back is a `str`, 
 Measured on SDK 1.7.0:
 
 | | Result |
-|---|---|
+| --- | --- |
 | `codec.serialize(Status.READY)` | `"ready"` |
 | `type(restored)` | `str` |
 | `restored == Status.READY` | `True` |
@@ -191,7 +191,7 @@ instance built with a bare string — a dataclass does no runtime type checking,
 ## Sizing the alternative honestly
 
 | | Lines | Buys you |
-|---|---|---|
+| --- | --- | --- |
 | Two methods per type | ~21 | Works today, obvious, nothing to learn |
 | `codec.py` + `serdes.py` + `store.py` | ~256 | Never write a conversion again, at any depth |
 
@@ -237,7 +237,7 @@ def test_stored_bytes_and_checkpoint_bytes_agree(fakes, ctx):
 ## Five approaches, and when each is right
 
 | Approach | Reach for it when | Cost |
-|---|---|---|
+| --- | --- | --- |
 | `to_dict` / `from_dict` | **Default.** A handful of types in one Lambda | ~21 lines, no config |
 | `NestedDataclassSerDes` | Many types, or shapes that change often | ~256 lines, no dependencies |
 | `ExplicitSerDes` | The wire format is a contract — versioning, renames, computed fields | Two methods per type |

@@ -27,19 +27,21 @@ import json
 import os
 
 import boto3
-from aws_durable_execution_sdk_python import DurableContext, durable_execution
-from aws_durable_execution_sdk_python.config import Duration, StepConfig, StepSemantics
-from aws_durable_execution_sdk_python.exceptions import CallableRuntimeError, StepInterruptedError
+from aws_durable_execution_sdk_python import DurableContext
+from aws_durable_execution_sdk_python import durable_execution
+from aws_durable_execution_sdk_python.config import Duration
+from aws_durable_execution_sdk_python.config import StepConfig
+from aws_durable_execution_sdk_python.config import StepSemantics
+from aws_durable_execution_sdk_python.exceptions import CallableRuntimeError
+from aws_durable_execution_sdk_python.exceptions import StepInterruptedError
 from aws_durable_execution_sdk_python.retries import RetryDecision
 from aws_durable_execution_sdk_python.types import StepContext
 
-from order_saga.logic import (
-    charge_idempotency_key,
-    order_total_cents,
-    parse_order,
-    reserved_quantities,
-    should_retry_charge,
-)
+from order_saga.logic import charge_idempotency_key
+from order_saga.logic import order_total_cents
+from order_saga.logic import parse_order
+from order_saga.logic import reserved_quantities
+from order_saga.logic import should_retry_charge
 
 lambda_client = boto3.client('lambda')
 dynamodb_client = boto3.client('dynamodb')
@@ -167,7 +169,7 @@ def lambda_handler(event: dict, context: DurableContext) -> dict:
 
     reservation_id = context.step(reserve_stock, name='reserve_stock')
 
-    def fulfil(stage: DurableContext) -> dict:
+    def fulfill(stage: DurableContext) -> dict:
         def charge_card(step_context: StepContext) -> str:
             charge_id = payments_client.charge(idempotency_key, order_total_cents(order), order.currency)
             step_context.logger.info('charged %s', charge_id)
@@ -195,7 +197,7 @@ def lambda_handler(event: dict, context: DurableContext) -> dict:
         return {'chargeId': charge_id, 'trackingNumber': tracking_number}
 
     try:
-        fulfilment = context.run_in_child_context(fulfil, name='fulfilment')
+        fulfillment = context.run_in_child_context(fulfill, name='fulfillment')
     # StepInterruptedError is deliberately not caught. It asks Lambda to retry the
     # invocation, and the stage's FAIL checkpoint reaches this handler as a
     # CallableRuntimeError on the replay that follows.
@@ -225,5 +227,5 @@ def lambda_handler(event: dict, context: DurableContext) -> dict:
         'status': 'placed',
         'orderId': order.order_id,
         'reservationId': reservation_id,
-        **fulfilment,
+        **fulfillment,
     }

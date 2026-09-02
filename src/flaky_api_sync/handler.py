@@ -25,42 +25,34 @@ import urllib.request
 from collections.abc import Callable
 
 import boto3
-from aws_durable_execution_sdk_python import (
-    DurableContext,
-    WithRetryConfig,
-    durable_execution,
-    with_retry,
-)
-from aws_durable_execution_sdk_python.config import Duration, JitterStrategy, StepConfig
+from aws_durable_execution_sdk_python import DurableContext
+from aws_durable_execution_sdk_python import WithRetryConfig
+from aws_durable_execution_sdk_python import durable_execution
+from aws_durable_execution_sdk_python import with_retry
+from aws_durable_execution_sdk_python.config import Duration
+from aws_durable_execution_sdk_python.config import JitterStrategy
+from aws_durable_execution_sdk_python.config import StepConfig
 from aws_durable_execution_sdk_python.retries import RetryDecision
-from aws_durable_execution_sdk_python.types import (
-    DurableContext as DurableContextInterface,
-)
-from aws_durable_execution_sdk_python.types import (
-    StepContext,
-    WaitForConditionCheckContext,
-)
-from aws_durable_execution_sdk_python.waits import (
-    WaitDecision,
-    WaitForConditionConfig,
-    WaitForConditionDecision,
-    WaitStrategyConfig,
-    create_wait_strategy,
-)
+from aws_durable_execution_sdk_python.types import DurableContext as DurableContextInterface
+from aws_durable_execution_sdk_python.types import StepContext
+from aws_durable_execution_sdk_python.types import WaitForConditionCheckContext
+from aws_durable_execution_sdk_python.waits import WaitDecision
+from aws_durable_execution_sdk_python.waits import WaitForConditionConfig
+from aws_durable_execution_sdk_python.waits import WaitForConditionDecision
+from aws_durable_execution_sdk_python.waits import WaitStrategyConfig
+from aws_durable_execution_sdk_python.waits import create_wait_strategy
 
-from flaky_api_sync.logic import (
-    DownloadUrlExpired,
-    PartnerApiError,
-    RetryLimits,
-    RetryPlan,
-    chunked,
-    export_is_running,
-    is_url_expiry_status,
-    parse_retry_after,
-    plan_block_retry,
-    plan_step_retry,
-    to_write_request,
-)
+from flaky_api_sync.logic import DownloadUrlExpired
+from flaky_api_sync.logic import PartnerApiError
+from flaky_api_sync.logic import RetryLimits
+from flaky_api_sync.logic import RetryPlan
+from flaky_api_sync.logic import chunked
+from flaky_api_sync.logic import export_is_running
+from flaky_api_sync.logic import is_url_expiry_status
+from flaky_api_sync.logic import parse_retry_after
+from flaky_api_sync.logic import plan_block_retry
+from flaky_api_sync.logic import plan_step_retry
+from flaky_api_sync.logic import to_write_request
 
 PARTNER_API_URL = os.environ['PARTNER_API_URL']
 PARTNER_API_TOKEN = os.environ['PARTNER_API_TOKEN']
@@ -189,9 +181,7 @@ def write_subscribers(records: list[dict]) -> int:
     """Upsert the export into DynamoDB, batched to the BatchWriteItem limit."""
     written = 0
     for batch in chunked(records, WRITE_BATCH_SIZE):
-        dynamodb_client.batch_write_item(
-            RequestItems={SUBSCRIBER_TABLE: [to_write_request(record) for record in batch]}
-        )
+        dynamodb_client.batch_write_item(RequestItems={SUBSCRIBER_TABLE: [to_write_request(record) for record in batch]})
         written += len(batch)
     return written
 

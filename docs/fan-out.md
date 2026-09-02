@@ -19,7 +19,7 @@ source](https://github.com/aws/aws-durable-execution-sdk-python).
 ## What varies decides which primitive you reach for
 
 | Primitive | What varies | What is fixed | Returns |
-|---|---|---|---|
+| --- | --- | --- | --- |
 | `context.map` | the data | one function, applied to every item | `BatchResult[R]` |
 | `context.parallel` | the work | the set of branches, known at build time | `BatchResult[T]` |
 | `context.run_in_child_context` | nothing | one body, run once | the body's `T` |
@@ -180,7 +180,7 @@ assertable in a test.
 ### `MapConfig` and `ParallelConfig` fields
 
 | Field | `MapConfig` | `ParallelConfig` | Effect |
-|---|---|---|---|
+| --- | --- | --- | --- |
 | `max_concurrency` | yes | yes | `ThreadPoolExecutor(max_workers=...)`; `None` means unbounded |
 | `completion_config` | yes | yes | when the batch is considered done — see below |
 | `nesting_type` | yes | yes | `NESTED` or `FLAT`; whether each branch gets a CONTEXT operation |
@@ -227,7 +227,7 @@ total operations: 3
 ```
 
 | | `NESTED` (default) | `FLAT` |
-|---|---|---|
+| --- | --- | --- |
 | Per-branch CONTEXT operation | yes | no |
 | Branch name in history | yes | gone |
 | Operations for the tree above | 5 | 3 |
@@ -323,7 +323,7 @@ handed to `parallel` in the same list as plain callables.
 ## `CompletionConfig` decides when the batch stops waiting
 
 | Field | Meaning | Comparison |
-|---|---|---|
+| --- | --- | --- |
 | `min_successful` | stop once this many have succeeded | `succeeded >= min_successful` |
 | `tolerated_failure_count` | breach past this many failures | `failed > tolerated_count` |
 | `tolerated_failure_percentage` | breach past this failed share | `failed / total * 100 > tolerated_pct` |
@@ -337,7 +337,7 @@ the source and cannot be called.
 Measured 2026-08-19 over four map items, one of which always raises:
 
 | Config | `completion_reason` | Results kept |
-|---|---|---|
+| --- | --- | --- |
 | `config` omitted entirely | `FAILURE_TOLERANCE_EXCEEDED` | the 3 that succeeded |
 | `MapConfig()` with no `completion_config` | `FAILURE_TOLERANCE_EXCEEDED` | the 2 that finished first |
 | `tolerated_failure_count=1` | `ALL_COMPLETED` | 3 |
@@ -392,7 +392,7 @@ five items — success 1, failure 3, started 1.
 ## Reading a `BatchResult`
 
 | Member | Type | What it gives |
-|---|---|---|
+| --- | --- | --- |
 | `get_results()` | `list[R]` | results of SUCCEEDED items only, in index order |
 | `get_errors()` | `list[ErrorObject]` | errors of FAILED items only |
 | `completion_reason` | `CompletionReason` | which criterion ended the batch |
@@ -498,11 +498,11 @@ Unlike `map` and `parallel`, this returns the body's own value and propagates it
 the primitive the other two are built on — both wrap their executor in a `child_handler` call.
 
 `src/order_saga/handler.py` puts a card charge and a shipping-label purchase in one child context so
-the fulfilment stage fails as a whole, and the parent compensates:
+the fulfillment stage fails as a whole, and the parent compensates:
 
 ```python
 try:
-    fulfilment = context.run_in_child_context(fulfil, name='fulfilment')
+    fulfillment = context.run_in_child_context(fulfill, name='fulfillment')
 # StepInterruptedError is deliberately not caught. It asks Lambda to retry the
 # invocation, and the stage's FAIL checkpoint reaches this handler as a
 # CallableRuntimeError on the replay that follows.
@@ -550,7 +550,7 @@ return {'runDate': run_date, 'mode': payload['mode'], 'load': loaded}
 ```
 
 | `InvokeConfig` field | Default | Effect |
-|---|---|---|
+| --- | --- | --- |
 | `timeout` | `Duration()`, meaning none | how long to wait for the callee |
 | `serdes_payload` | `DEFAULT_JSON_SERDES` | codec for the payload sent |
 | `serdes_result` | `DEFAULT_JSON_SERDES` | codec for the result returned |

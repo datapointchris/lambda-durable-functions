@@ -12,7 +12,7 @@ aws-durable-execution-sdk-python-testing 1.2.1 on 2026-08-19, in this repository
 ## Four calls wait, and each one suspends the invocation
 
 | Call | Waits for | Returns | Operation recorded |
-|---|---|---|---|
+| --- | --- | --- | --- |
 | `context.wait` | a timer | `None` | `WaitOperation` |
 | `context.wait_for_condition` | the check to stop it | the final state | `StepOperation` |
 | `context.wait_for_callback` | an external answer | the callback payload | `ContextOperation` |
@@ -67,7 +67,7 @@ def waits(_event: dict, context: DurableContext) -> str:
 `Duration` holds a whole number of seconds. These are every way to build one and read it back:
 
 | Constructor | Example | Seconds |
-|---|---|---|
+| --- | --- | --- |
 | `Duration(seconds=...)` | `Duration(seconds=90)` | 90 |
 | `Duration.from_seconds(v)` | `Duration.from_seconds(30)` | 30 |
 | `Duration.from_minutes(v)` | `Duration.from_minutes(5)` | 300 |
@@ -103,7 +103,7 @@ opposite of all four. The same argument applies to a polling loop written with `
 The contract is two callables and one state value that is threaded between them.
 
 | Piece | Signature | Job |
-|---|---|---|
+| --- | --- | --- |
 | `check` | `(state: T, ctx: WaitForConditionCheckContext) -> T` | observe the world, return the new state |
 | `wait_strategy` | `(state: T, attempt: int) -> WaitForConditionDecision` | stop, or wait how long |
 | `initial_state` | `T` | what `check` receives on attempt 1 |
@@ -342,7 +342,7 @@ a local test. A test that polls ten times costs at least ten seconds of real wal
 not hand-roll one. The fields, with their measured defaults:
 
 | Field | Default | Meaning |
-|---|---|---|
+| --- | --- | --- |
 | `should_continue_polling` | required | `Callable[[T], bool]` — takes the state only, no attempt |
 | `max_attempts` | `60` | stop polling once `attempts_made >= max_attempts` |
 | `initial_delay` | `Duration.from_seconds(5)` | the delay before attempt 2 |
@@ -355,7 +355,7 @@ The delay is computed as `min(initial_delay * backoff_rate ** (attempts_made - 1
 jittered, then rounded up with a floor of one second.
 
 | `JitterStrategy` | Delay returned |
-|---|---|
+| --- | --- |
 | `NONE` | the exact computed delay |
 | `HALF` | `delay / 2 + random(0, delay / 2)` |
 | `FULL` | `random(0, delay)` |
@@ -475,7 +475,7 @@ anything the submitter produced. Returning a value from it therefore reaches nob
 The outside world answers with three APIs, which the local runner mirrors:
 
 | AWS API | Local runner | Effect |
-|---|---|---|
+| --- | --- | --- |
 | `SendDurableExecutionCallbackSuccess` | `send_callback_success(id, result)` | the wait returns the payload |
 | `SendDurableExecutionCallbackFailure` | `send_callback_failure(id, error)` | the wait raises |
 | `SendDurableExecutionCallbackHeartbeat` | `send_callback_heartbeat(id)` | resets the heartbeat timer |
@@ -535,7 +535,7 @@ same token twice is harmless; posting a second *different* request is not. [Step
 the submitter step.
 
 | Field | Type | Watches |
-|---|---|---|
+| --- | --- | --- |
 | `timeout` | `Duration` | the whole wait — how long the answer may take |
 | `heartbeat_timeout` | `Duration` | the answering system — how long it may go silent |
 | `serdes` | `SerDes \| None` | how the returned payload is decoded |
@@ -577,7 +577,7 @@ executor catches it and re-raises `error_object.to_callable_runtime_error()`.
 The three cases are separated only by the message string. Measured markers:
 
 | Cause | Message | Classified as |
-|---|---|---|
+| --- | --- | --- |
 | `send_callback_failure` | the caller's `ErrorObject` message, verbatim | `reviewer-rejected` |
 | `timeout` elapsed | `Callback timed out: Callback.Timeout` | `window-lapsed` |
 | `heartbeat_timeout` elapsed | `Callback heartbeat timed out: Callback.Heartbeat` | `review-service-silent` |
@@ -683,7 +683,7 @@ runner, `poll_interval`, and driving a callback with `run_async`.
 ## Where to go next
 
 | Page | Answers |
-|---|---|
+| --- | --- |
 | [Concepts](concepts.md) | What replay is, and why the handler body re-enters after every wait |
 | [Steps](steps.md) | What belongs in a step, retry strategies, and `StepSemantics` |
 | [Fan-out](fan-out.md) | `map`, `parallel`, and how a `BatchResult` reports partial failure |

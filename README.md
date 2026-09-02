@@ -12,7 +12,7 @@ configuration, `lambda_handler(event, context)` at module level. None restructur
 testable; tests reach every seam with `monkeypatch.setattr`.
 
 | Example | Demonstrates |
-|---|---|
+| --- | --- |
 | `landing_zone` | `wait_for_condition` settle polling, a dataclass needing a custom `SerDes`, leader election |
 | `order_saga` | `AT_MOST_ONCE_PER_RETRY` vs the default, `run_in_child_context` as a failure unit, compensation |
 | `batch_scoring` | `context.map`, `max_concurrency`, `CompletionConfig` failure tolerance, `BatchResult` |
@@ -22,7 +22,7 @@ testable; tests reach every seam with `monkeypatch.setattr`.
 | `nested_payloads` | A nested `StrEnum` dataclass through a checkpoint and through S3 — `minimal.py` in 21 lines, the general codec beside it |
 
 | Document | Answers |
-|---|---|
+| --- | --- |
 | [docs/concepts.md](docs/concepts.md) | The execution model, replay, and the determinism rules |
 | [docs/steps.md](docs/steps.md) | `context.step`, which spelling to write, replay-safe logging, `StepConfig` |
 | [docs/waits.md](docs/waits.md) | `wait`, `wait_for_condition`, `wait_for_callback`, backoff and jitter |

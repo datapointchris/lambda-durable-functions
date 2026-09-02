@@ -21,7 +21,7 @@ An ordinary Lambda function has one unit: the invocation. A durable function has
 them apart is most of the work.
 
 | Unit | Lives for | Ends when | Bounded by |
-|---|---|---|---|
+| --- | --- | --- | --- |
 | **Execution** | up to 366 days | the handler returns or raises, or it times out | `ExecutionTimeout` |
 | **Invocation** | up to 90 minutes | the handler returns or suspends | the function's `Timeout` |
 
@@ -41,7 +41,7 @@ An operation is one of six types. The list is exhaustive, read from `OperationTy
 [`lambda_service.py`][lambda_service]:
 
 | `OperationType` | Created by | Recorded outcome |
-|---|---|---|
+| --- | --- | --- |
 | `EXECUTION` | the execution itself | the handler's return value or error |
 | `STEP` | `context.step`, `context.wait_for_condition` | the step's return value |
 | `WAIT` | `context.wait` | nothing; a scheduled resume timestamp |
@@ -112,7 +112,7 @@ INVOCATION 2 ──────────────────────�
 The counters from that run:
 
 | Probe | Count | What it proves |
-|---|---|---|
+| --- | --- | --- |
 | Invocations of the decorated handler | 2 | the service really did resume it |
 | Passes through the handler body | 2 | the body re-runs from the top, it does not resume mid-way |
 | `list_durable_executions_by_function` calls | 1 | the `leader` step body ran once across two body passes |
@@ -242,7 +242,7 @@ durable operations, in the same order, before it reaches new work.** It does not
 functions, and it does not forbid side effects — it forbids them outside a step.
 
 | # | Rule | Broken by | Cost |
-|---|---|---|---|
+| --- | --- | --- | --- |
 | 1 | No wall clock in the handler body | `time.time()`, `datetime.now()` | a fresh value every pass |
 | 2 | No randomness in the handler body | `uuid4()`, `random`, `secrets` | a fresh value every pass |
 | 3 | No unordered iteration driving operations | iterating a `set` | operation order differs per invocation |
@@ -378,7 +378,7 @@ The full `DurableContext` surface, read from [`context.py`][context] and
 `OperationType.from_sub_type`. Nine methods create durable operations. Three members do not.
 
 | `DurableContext` member | `OperationType` | `OperationSubType` | Covered by |
-|---|---|---|---|
+| --- | --- | --- | --- |
 | `step(...)` | `STEP` | `Step` | [Steps](steps.md) |
 | `wait_for_condition(...)` | `STEP` | `WaitForCondition` | [Waits](waits.md) |
 | `wait(...)` | `WAIT` | `Wait` | [Waits](waits.md) |
@@ -409,12 +409,12 @@ of it is recorded anywhere.
 ## Put it in a step when repeating it would be wrong, or its value must freeze
 
 The decision has two tests, and either one is sufficient. **Would running this twice be wrong?**
-**Must this value be identical on the next invocation?** A yes to either means a step. Two noes mean
-handler code, and a step there is pure cost — [SDK internals](sdk-internals.md) measures what that
-cost is.
+**Must this value be identical on the next invocation?** A yes to either means a step. No to both
+means handler code, and a step there is pure cost — [SDK internals](sdk-internals.md) measures what
+that cost is.
 
 | Code | Where it goes | Which test it fails |
-|---|---|---|
+| --- | --- | --- |
 | An AWS API call, an HTTP request, a database write | **step** | repeating it is wrong |
 | Publishing a message, starting a job, sending an email | **step** | repeating it is wrong |
 | `time.time()`, `datetime.now()` | **step** | the value must freeze |
@@ -447,7 +447,7 @@ None of this is handler code. It is `DurableConfig` on the function, and the val
 bounds declared in the Lambda API model shipped in botocore 1.43.74, read on 2026-08-19.
 
 | Field | Unit | Min | Max | Governs |
-|---|---|---|---|---|
+| --- | --- | --- | --- | --- |
 | `ExecutionTimeout` | seconds | 1 | 31,622,400 (366 days) | the whole execution, not one invocation |
 | `RetentionPeriodInDays` | days | 1 | 90 | how long `GetDurableExecutionHistory` still answers |
 | `KMSKeyArn` | ARN | — | — | encryption of input, output and error payloads |
@@ -483,7 +483,7 @@ guide](https://docs.ichrisbirch.com/aws/lambda-durable-functions/).
 ## Where to go next
 
 | Page | Answers |
-|---|---|
+| --- | --- |
 | [Home](index.md) | The example this site is built on, and every finding in one list |
 | [Steps](steps.md) | Step semantics, retry strategies, child contexts, and serializing a step's result |
 | [Waits](waits.md) | `wait`, `wait_for_condition`, callbacks, and the two clocks on a callback |
@@ -497,7 +497,6 @@ Upstream: the [SDK source](https://github.com/aws/aws-durable-execution-sdk-pyth
 execution developer guide](https://docs.aws.amazon.com/durable-execution/), and its [best
 practices](https://docs.aws.amazon.com/durable-execution/patterns/best-practices/).
 
-[constants]: https://github.com/aws/aws-durable-execution-sdk-python/blob/main/packages/aws-durable-execution-sdk-python/src/aws_durable_execution_sdk_python/constants.py
 [context]: https://github.com/aws/aws-durable-execution-sdk-python/blob/main/packages/aws-durable-execution-sdk-python/src/aws_durable_execution_sdk_python/context.py
 [exceptions]: https://github.com/aws/aws-durable-execution-sdk-python/blob/main/packages/aws-durable-execution-sdk-python/src/aws_durable_execution_sdk_python/exceptions.py
 [execution]: https://github.com/aws/aws-durable-execution-sdk-python/blob/main/packages/aws-durable-execution-sdk-python/src/aws_durable_execution_sdk_python/execution.py

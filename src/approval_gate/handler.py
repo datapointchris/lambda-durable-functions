@@ -21,22 +21,23 @@ import os
 import time
 
 import boto3
-from aws_durable_execution_sdk_python import DurableContext, durable_execution
-from aws_durable_execution_sdk_python.config import Duration, WaitForCallbackConfig
+from aws_durable_execution_sdk_python import DurableContext
+from aws_durable_execution_sdk_python import durable_execution
+from aws_durable_execution_sdk_python.config import Duration
+from aws_durable_execution_sdk_python.config import WaitForCallbackConfig
 from aws_durable_execution_sdk_python.exceptions import CallableRuntimeError
-from aws_durable_execution_sdk_python.types import StepContext, WaitForCallbackContext
+from aws_durable_execution_sdk_python.types import StepContext
+from aws_durable_execution_sdk_python.types import WaitForCallbackContext
 
-from approval_gate.logic import (
-    APPROVED,
-    DECLINED,
-    ChangeRequest,
-    Decision,
-    build_review_message,
-    classify_gate_failure,
-    parse_change_request,
-    parse_decision,
-    review_outcome_item,
-)
+from approval_gate.logic import APPROVED
+from approval_gate.logic import DECLINED
+from approval_gate.logic import ChangeRequest
+from approval_gate.logic import Decision
+from approval_gate.logic import build_review_message
+from approval_gate.logic import classify_gate_failure
+from approval_gate.logic import parse_change_request
+from approval_gate.logic import parse_decision
+from approval_gate.logic import review_outcome_item
 
 sqs_client = boto3.client('sqs')
 sfn_client = boto3.client('stepfunctions')

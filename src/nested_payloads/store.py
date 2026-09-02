@@ -10,7 +10,8 @@ gets ordinary JSON instead.
 import json
 from typing import Any
 
-from nested_payloads.codec import structure, unstructure
+from nested_payloads.codec import structure
+from nested_payloads.codec import unstructure
 from nested_payloads.models import Manifest
 
 

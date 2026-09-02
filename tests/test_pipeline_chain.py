@@ -10,24 +10,20 @@ import json
 import pytest
 from aws_durable_execution_sdk_python_testing import DurableFunctionTestRunner
 
-from conftest_pipeline_chain import (
-    RUN_DATE,
-    RecordingInvokeProcessor,
-    SchemaMismatch,
-    Sources,
-    ThrottlingException,
-    register_load_function,
-    swap_sources,
-)
+from conftest_pipeline_chain import RUN_DATE
+from conftest_pipeline_chain import RecordingInvokeProcessor
+from conftest_pipeline_chain import SchemaMismatch
+from conftest_pipeline_chain import Sources
+from conftest_pipeline_chain import ThrottlingException
+from conftest_pipeline_chain import register_load_function
+from conftest_pipeline_chain import swap_sources
 from pipeline_chain import handler as handler_module
-from pipeline_chain.logic import (
-    DATASETS,
-    build_load_payload,
-    extract_summary,
-    is_transient,
-    run_date_from_event,
-    staging_key,
-)
+from pipeline_chain.logic import DATASETS
+from pipeline_chain.logic import build_load_payload
+from pipeline_chain.logic import extract_summary
+from pipeline_chain.logic import is_transient
+from pipeline_chain.logic import run_date_from_event
+from pipeline_chain.logic import staging_key
 
 
 @pytest.fixture
@@ -184,9 +180,7 @@ def test_one_dead_source_is_tolerated_and_the_load_runs_in_partial_mode(sources:
     assert result['load']['tablesSwapped'] is False
 
 
-def test_the_handoff_names_the_load_function_and_carries_the_staged_keys(
-    sources: Sources, handoff: RecordingInvokeProcessor
-):
+def test_the_handoff_names_the_load_function_and_carries_the_staged_keys(sources: Sources, handoff: RecordingInvokeProcessor):
     run()
 
     function_name, sent = handoff.calls[0]
@@ -197,9 +191,7 @@ def test_the_handoff_names_the_load_function_and_carries_the_staged_keys(
     assert sent['rowCount'] == len(sources.rds.rows) + len(sources.s3.keys) + len(sources.dynamodb.items)
 
 
-def test_two_dead_sources_exceed_the_tolerance_and_nothing_is_handed_off(
-    sources: Sources, handoff: RecordingInvokeProcessor
-):
+def test_two_dead_sources_exceed_the_tolerance_and_nothing_is_handed_off(sources: Sources, handoff: RecordingInvokeProcessor):
     """The batch reports the breach rather than raising, so the handler acts on it."""
     sources.dynamodb.failures.pending = [SchemaMismatch('snapshot_date is now a number')]
     sources.rds.failures.pending = [SchemaMismatch('total_cents was dropped')]
@@ -227,9 +219,7 @@ def test_every_dataset_is_staged_exactly_once(sources: Sources):
 
     run()
 
-    assert sources.s3.staged_keys() == [
-        staging_key('staging/', dataset, RUN_DATE) for dataset in sorted(DATASETS)
-    ]
+    assert sources.s3.staged_keys() == [staging_key('staging/', dataset, RUN_DATE) for dataset in sorted(DATASETS)]
 
 
 @pytest.mark.usefixtures('handoff')

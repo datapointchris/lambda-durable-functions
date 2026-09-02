@@ -6,15 +6,15 @@ import pytest
 from aws_durable_execution_sdk_python.config import StepSemantics
 from aws_durable_execution_sdk_python_testing import DurableFunctionTestRunner
 
-from conftest_order_saga import carrier_outage, checkout_event, install_fakes
+from conftest_order_saga import carrier_outage
+from conftest_order_saga import checkout_event
+from conftest_order_saga import install_fakes
 from order_saga import handler as handler_module
-from order_saga.logic import (
-    charge_idempotency_key,
-    order_total_cents,
-    parse_order,
-    reserved_quantities,
-    should_retry_charge,
-)
+from order_saga.logic import charge_idempotency_key
+from order_saga.logic import order_total_cents
+from order_saga.logic import parse_order
+from order_saga.logic import reserved_quantities
+from order_saga.logic import should_retry_charge
 
 
 @pytest.fixture
@@ -58,9 +58,7 @@ def test_an_interrupted_charge_is_not_retried_even_on_the_first_attempt():
 
 
 def test_a_charge_that_failed_outright_is_retried_up_to_the_attempt_limit():
-    decisions = [
-        should_retry_charge(interrupted=False, attempts_made=attempt, max_attempts=3) for attempt in (1, 2, 3)
-    ]
+    decisions = [should_retry_charge(interrupted=False, attempts_made=attempt, max_attempts=3) for attempt in (1, 2, 3)]
 
     assert decisions == [True, True, False]
 
@@ -85,12 +83,12 @@ def test_the_charge_is_the_basket_total(saga_clients):
 
 
 @pytest.mark.usefixtures('saga_clients')
-def test_the_fulfilment_stage_groups_the_charge_and_the_label():
+def test_the_fulfillment_stage_groups_the_charge_and_the_label():
     """The stage is one operation to the parent, which is what lets it fail as a unit."""
     result = run(checkout_event())
 
-    stage = result.get_context('fulfilment')
-    assert [op.name for op in result.operations] == ['reserve_stock', 'fulfilment']
+    stage = result.get_context('fulfillment')
+    assert [op.name for op in result.operations] == ['reserve_stock', 'fulfillment']
     assert [op.name for op in stage.child_operations] == ['charge_card', 'buy_label']
 
 
@@ -115,7 +113,7 @@ def test_a_retried_label_does_not_charge_the_card_again(saga_clients):
 
     result = run(checkout_event())
 
-    stage = result.get_context('fulfilment')
+    stage = result.get_context('fulfillment')
     assert stage.get_step('charge_card').attempt == 1
     assert stage.get_step('buy_label').attempt == 2
     assert payload(result)['status'] == 'placed'

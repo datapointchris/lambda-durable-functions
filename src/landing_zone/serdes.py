@@ -8,7 +8,9 @@ datetime, date, tuple, list, dict and BatchResult. Anything else raises
 from dataclasses import asdict
 from typing import Any
 
-from aws_durable_execution_sdk_python.serdes import ExtendedTypeSerDes, SerDes, SerDesContext
+from aws_durable_execution_sdk_python.serdes import ExtendedTypeSerDes
+from aws_durable_execution_sdk_python.serdes import SerDes
+from aws_durable_execution_sdk_python.serdes import SerDesContext
 
 
 class DataclassSerDes(SerDes):

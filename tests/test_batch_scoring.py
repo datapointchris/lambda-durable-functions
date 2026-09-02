@@ -10,30 +10,28 @@ import json
 from typing import Any
 
 import pytest
-from aws_durable_execution_sdk_python import DurableContext, durable_execution
+from aws_durable_execution_sdk_python import DurableContext
+from aws_durable_execution_sdk_python import durable_execution
 from aws_durable_execution_sdk_python.concurrency.models import BatchResult
-from aws_durable_execution_sdk_python.config import ItemBatcher, MapConfig
+from aws_durable_execution_sdk_python.config import ItemBatcher
+from aws_durable_execution_sdk_python.config import MapConfig
 from aws_durable_execution_sdk_python_testing import DurableFunctionTestRunner
 from aws_durable_execution_sdk_python_testing.exceptions import DurableFunctionsTestError
 
-from batch_scoring.logic import (
-    UNIDENTIFIED_APPLICATION,
-    batch_summary,
-    group_into_batches,
-    partition_scorable,
-    risk_band,
-    roll_up_batches,
-    score_rows,
-)
-from conftest_batch_scoring import (
-    COMPLETE_FEATURES,
-    MAX_CONCURRENT_BATCHES,
-    application_ids,
-    handler_module,
-    install_fakes,
-    scoring_event,
-    seed_features,
-)
+from batch_scoring.logic import UNIDENTIFIED_APPLICATION
+from batch_scoring.logic import batch_summary
+from batch_scoring.logic import group_into_batches
+from batch_scoring.logic import partition_scorable
+from batch_scoring.logic import risk_band
+from batch_scoring.logic import roll_up_batches
+from batch_scoring.logic import score_rows
+from conftest_batch_scoring import COMPLETE_FEATURES
+from conftest_batch_scoring import MAX_CONCURRENT_BATCHES
+from conftest_batch_scoring import application_ids
+from conftest_batch_scoring import handler_module
+from conftest_batch_scoring import install_fakes
+from conftest_batch_scoring import scoring_event
+from conftest_batch_scoring import seed_features
 
 # Three batches of three. The last two digits of an id are its probability of
 # default, so APP-0090 declines, APP-0050 refers, and APP-0010 approves.

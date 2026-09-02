@@ -10,7 +10,8 @@ import json
 import pytest
 from aws_durable_execution_sdk_python_testing import DurableFunctionTestRunner
 
-from conftest import s3_event, s3_page
+from conftest import s3_event
+from conftest import s3_page
 from landing_zone import handler as handler_module
 
 SETTLED = {'landing/part-0001.csv': (120, 600), 'landing/part-0002.csv': (80, 600)}

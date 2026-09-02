@@ -12,29 +12,25 @@ import json
 import pytest
 from aws_durable_execution_sdk_python.lambda_service import ErrorObject
 
-from approval_gate.logic import (
-    ChangeRequest,
-    Decision,
-    classify_gate_failure,
-    parse_change_request,
-    parse_decision,
-    review_outcome_item,
-)
-from conftest_approval_gate import (
-    CALLBACK_OPERATION_NAME,
-    GATE_CONTEXT_NAME,
-    SUBMITTER_STEP_NAME,
-    approval,
-    audit_row,
-    beat_for,
-    change_event,
-    gate_runner,
-    handler_module,
-    install_fakes,
-    open_gate,
-    queued_token,
-    reviewer_reads_it,
-)
+from approval_gate.logic import ChangeRequest
+from approval_gate.logic import Decision
+from approval_gate.logic import classify_gate_failure
+from approval_gate.logic import parse_change_request
+from approval_gate.logic import parse_decision
+from approval_gate.logic import review_outcome_item
+from conftest_approval_gate import CALLBACK_OPERATION_NAME
+from conftest_approval_gate import GATE_CONTEXT_NAME
+from conftest_approval_gate import SUBMITTER_STEP_NAME
+from conftest_approval_gate import approval
+from conftest_approval_gate import audit_row
+from conftest_approval_gate import beat_for
+from conftest_approval_gate import change_event
+from conftest_approval_gate import gate_runner
+from conftest_approval_gate import handler_module
+from conftest_approval_gate import install_fakes
+from conftest_approval_gate import open_gate
+from conftest_approval_gate import queued_token
+from conftest_approval_gate import reviewer_reads_it
 
 WINDOW_TIMEOUT_MESSAGE = 'Callback timed out: Callback.Timeout'
 HEARTBEAT_TIMEOUT_MESSAGE = 'Callback heartbeat timed out: Callback.Heartbeat'

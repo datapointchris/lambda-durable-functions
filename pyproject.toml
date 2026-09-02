@@ -29,7 +29,7 @@ build-backend = "hatchling.build"
 packages = ["src/landing_zone"]
 
 [tool.ruff]
-line-length = 110
+line-length = 140
 src = ["src", "tests"]
 
 [tool.ruff.lint]
@@ -55,9 +55,10 @@ minversion = "8.0"
 testpaths = ["tests"]
 pythonpath = ["src", "tests"]
 
+verbosity_assertions = 2
+
 # `standard` rather than basedpyright's `recommended` default, matching the
 # shared default. Named `pyright` so basedpyright and Pylance both read it.
-verbosity_assertions = 2
 [tool.pyright]
 typeCheckingMode = "standard"
 include = ["src", "tests"]
@@ -70,12 +71,13 @@ pretty = true
 # silently hides the call-arity errors basedpyright reports.
 ignore_missing_imports = false
 
+check_untyped_defs = false
+warn_return_any = false
+
 # boto3 ships no type information and no stub package is installed. Scoped to
 # boto3 rather than set globally: an unresolved aws_durable_execution_sdk_python
 # must still fail, because that import silently becoming Any is what hides the
 # call-arity errors basedpyright reports. See docs/typing-and-tooling.md.
-check_untyped_defs = false
-warn_return_any = false
 [[tool.mypy.overrides]]
 module = ["boto3", "boto3.*", "botocore", "botocore.*"]
 ignore_missing_imports = true

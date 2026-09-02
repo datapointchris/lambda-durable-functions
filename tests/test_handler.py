@@ -5,7 +5,8 @@ import json
 
 from aws_durable_execution_sdk_python_testing import DurableFunctionTestRunner
 
-from conftest import s3_event, s3_page
+from conftest import s3_event
+from conftest import s3_page
 from landing_zone import handler as handler_module
 
 

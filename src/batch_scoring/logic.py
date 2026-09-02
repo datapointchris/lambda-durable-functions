@@ -30,10 +30,7 @@ def group_into_batches(application_ids: Sequence[str], max_items_per_batch: int)
     """
     if max_items_per_batch < 1:
         raise ValueError(f'max_items_per_batch must be at least 1, got {max_items_per_batch}')
-    return [
-        list(application_ids[start : start + max_items_per_batch])
-        for start in range(0, len(application_ids), max_items_per_batch)
-    ]
+    return [list(application_ids[start : start + max_items_per_batch]) for start in range(0, len(application_ids), max_items_per_batch)]
 
 
 def batch_operation_name(batch: Sequence[str], index: int) -> str:

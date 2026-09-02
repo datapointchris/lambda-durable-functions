@@ -5,7 +5,8 @@ from datetime import datetime
 
 import pytest
 from aws_durable_execution_sdk_python.exceptions import SerDesError
-from aws_durable_execution_sdk_python.serdes import ExtendedTypeSerDes, SerDesContext
+from aws_durable_execution_sdk_python.serdes import ExtendedTypeSerDes
+from aws_durable_execution_sdk_python.serdes import SerDesContext
 
 from landing_zone.logic import Manifest
 from landing_zone.serdes import DataclassSerDes

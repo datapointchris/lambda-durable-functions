@@ -41,18 +41,14 @@ class FakePayments:
         self.fail_next_charge: Exception | None = None
 
     def charge(self, idempotency_key: str, amount_cents: int, currency: str) -> str:
-        self.charge_attempts.append(
-            {'key': idempotency_key, 'amountCents': amount_cents, 'currency': currency}
-        )
+        self.charge_attempts.append({'key': idempotency_key, 'amountCents': amount_cents, 'currency': currency})
         if self.fail_next_charge is not None:
             error, self.fail_next_charge = self.fail_next_charge, None
             raise error
         charge_id = self.charges.setdefault(idempotency_key, f'ch_{len(self.charges) + 1}')
         if self.interrupt_next_charge:
             self.interrupt_next_charge = False
-            raise TimedSuspendExecution.from_delay(
-                'invocation lost after the processor took the money', INTERRUPT_RESUME_SECONDS
-            )
+            raise TimedSuspendExecution.from_delay('invocation lost after the processor took the money', INTERRUPT_RESUME_SECONDS)
         return charge_id
 
     def refund_by_key(self, idempotency_key: str) -> str | None:
@@ -96,8 +92,7 @@ def checkout_event(*lines: tuple[str, int, int], order_id: str = 'ord-4417') -> 
         'customerId': 'cus-8802',
         'currency': 'USD',
         'lines': [
-            {'sku': sku, 'quantity': quantity, 'unitPriceCents': unit_price_cents}
-            for sku, quantity, unit_price_cents in (lines or BASKET)
+            {'sku': sku, 'quantity': quantity, 'unitPriceCents': unit_price_cents} for sku, quantity, unit_price_cents in (lines or BASKET)
         ],
     }
 

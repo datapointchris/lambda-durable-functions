@@ -19,7 +19,8 @@ import json
 import os
 import threading
 import time
-from collections.abc import Callable, Iterator
+from collections.abc import Callable
+from collections.abc import Iterator
 
 os.environ.setdefault('AWS_DEFAULT_REGION', 'us-east-2')
 os.environ.setdefault('STAGING_BUCKET', 'test-analytics-staging')
@@ -32,17 +33,14 @@ os.environ.setdefault('CLICKSTREAM_PREFIX', 'events/')
 os.environ.setdefault('INVENTORY_TABLE', 'inventory-snapshots')
 os.environ.setdefault('LOAD_FUNCTION_NAME', 'warehouse-load')
 
-from aws_durable_execution_sdk_python.lambda_service import (  # noqa: E402
-    ChainedInvokeDetails,
-    Operation,
-    OperationStatus,
-    OperationType,
-    OperationUpdate,
-)
-from aws_durable_execution_sdk_python.serdes import DEFAULT_JSON_SERDES, SerDesContext  # noqa: E402
-from aws_durable_execution_sdk_python_testing.checkpoint.transformer import (  # noqa: E402
-    OperationTransformer,
-)
+from aws_durable_execution_sdk_python.lambda_service import ChainedInvokeDetails  # noqa: E402
+from aws_durable_execution_sdk_python.lambda_service import Operation  # noqa: E402
+from aws_durable_execution_sdk_python.lambda_service import OperationStatus  # noqa: E402
+from aws_durable_execution_sdk_python.lambda_service import OperationType  # noqa: E402
+from aws_durable_execution_sdk_python.lambda_service import OperationUpdate  # noqa: E402
+from aws_durable_execution_sdk_python.serdes import DEFAULT_JSON_SERDES  # noqa: E402
+from aws_durable_execution_sdk_python.serdes import SerDesContext  # noqa: E402
+from aws_durable_execution_sdk_python_testing.checkpoint.transformer import OperationTransformer  # noqa: E402
 
 from pipeline_chain import handler as handler_module  # noqa: E402
 
@@ -226,9 +224,7 @@ class RecordingInvokeProcessor:
             parent_id=update.parent_id,
             name=update.name,
             sub_type=update.sub_type,
-            chained_invoke_details=ChainedInvokeDetails(
-                result=DEFAULT_JSON_SERDES.serialize(self.downstream(payload), serdes_context)
-            ),
+            chained_invoke_details=ChainedInvokeDetails(result=DEFAULT_JSON_SERDES.serialize(self.downstream(payload), serdes_context)),
         )
 
 

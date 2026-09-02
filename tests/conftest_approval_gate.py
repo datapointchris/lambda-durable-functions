@@ -65,7 +65,7 @@ def change_event(request_id: str = 'CR-2041', target_table: str = 'warehouse.ord
     return {
         'changeRequestId': request_id,
         'targetTable': target_table,
-        'statement': f'ALTER TABLE {target_table} ADD COLUMN fulfilment_centre VARCHAR',
+        'statement': f'ALTER TABLE {target_table} ADD COLUMN fulfillment_centre VARCHAR',
         'requestedBy': 'priya@example.com',
     }
 

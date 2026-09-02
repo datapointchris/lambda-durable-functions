@@ -66,10 +66,7 @@ class FakeLambda:
 def s3_page(entries: dict[str, tuple[int, int]]) -> dict:
     """Build one `list_objects_v2` page from key -> (size, age_in_seconds)."""
     return {
-        'Contents': [
-            {'Key': key, 'Size': size, 'LastModified': EPOCH - dt.timedelta(seconds=age)}
-            for key, (size, age) in entries.items()
-        ]
+        'Contents': [{'Key': key, 'Size': size, 'LastModified': EPOCH - dt.timedelta(seconds=age)} for key, (size, age) in entries.items()]
     }
 
 

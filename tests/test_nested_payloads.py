@@ -2,17 +2,24 @@
 
 import json
 from dataclasses import asdict
-from datetime import UTC, datetime
+from datetime import UTC
+from datetime import datetime
 
 import pytest
 from aws_durable_execution_sdk_python.exceptions import SerDesError
-from aws_durable_execution_sdk_python.serdes import ExtendedTypeSerDes, SerDesContext
+from aws_durable_execution_sdk_python.serdes import ExtendedTypeSerDes
+from aws_durable_execution_sdk_python.serdes import SerDesContext
 from aws_durable_execution_sdk_python_testing import DurableFunctionTestRunner
 
-from conftest_nested_payloads import install_fakes, s3_page
-from nested_payloads.codec import structure, unstructure
-from nested_payloads.models import Manifest, TrackedFile
-from nested_payloads.serdes import ExplicitSerDes, FlatDataclassSerDes, NestedDataclassSerDes
+from conftest_nested_payloads import install_fakes
+from conftest_nested_payloads import s3_page
+from nested_payloads.codec import structure
+from nested_payloads.codec import unstructure
+from nested_payloads.models import Manifest
+from nested_payloads.models import TrackedFile
+from nested_payloads.serdes import ExplicitSerDes
+from nested_payloads.serdes import FlatDataclassSerDes
+from nested_payloads.serdes import NestedDataclassSerDes
 from nested_payloads.store import ManifestStore
 
 NESTED = Manifest(
@@ -120,10 +127,7 @@ class VersionedManifest(Manifest):
         return cls(
             status=payload['state'],
             bucket='test-lake',
-            files=[
-                TrackedFile(f['key'], f['size'], datetime.fromisoformat(f['modified']))
-                for f in payload['files']
-            ],
+            files=[TrackedFile(f['key'], f['size'], datetime.fromisoformat(f['modified'])) for f in payload['files']],
         )
 
 
@@ -229,6 +233,4 @@ def test_cattrs_produces_the_same_wire_form_as_the_recursive_codec(ctx):
     """Both emit plain JSON, so the store can read either."""
     from nested_payloads.serdes import cattrs_serdes
 
-    assert json.loads(cattrs_serdes(Manifest).serialize(NESTED, ctx)) == json.loads(
-        NestedDataclassSerDes(Manifest).serialize(NESTED, ctx)
-    )
+    assert json.loads(cattrs_serdes(Manifest).serialize(NESTED, ctx)) == json.loads(NestedDataclassSerDes(Manifest).serialize(NESTED, ctx))

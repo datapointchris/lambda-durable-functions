@@ -13,10 +13,15 @@ comparison.
 import os
 
 import boto3
-from aws_durable_execution_sdk_python import DurableContext, durable_execution
+from aws_durable_execution_sdk_python import DurableContext
+from aws_durable_execution_sdk_python import durable_execution
 from aws_durable_execution_sdk_python.types import StepContext
 
-from nested_payloads.minimal import Manifest, Status, TrackedFile, load_manifest, save_manifest
+from nested_payloads.minimal import Manifest
+from nested_payloads.minimal import Status
+from nested_payloads.minimal import TrackedFile
+from nested_payloads.minimal import load_manifest
+from nested_payloads.minimal import save_manifest
 
 s3_client = boto3.client('s3')
 

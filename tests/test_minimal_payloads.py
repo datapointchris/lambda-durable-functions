@@ -1,17 +1,24 @@
 """The small approach, proved against the same nested shape."""
 
 import json
-from datetime import UTC, datetime
+from datetime import UTC
+from datetime import datetime
 
 import pytest
-from aws_durable_execution_sdk_python import DurableContext, durable_execution
+from aws_durable_execution_sdk_python import DurableContext
+from aws_durable_execution_sdk_python import durable_execution
 from aws_durable_execution_sdk_python.exceptions import SerDesError
-from aws_durable_execution_sdk_python.serdes import ExtendedTypeSerDes, SerDesContext
+from aws_durable_execution_sdk_python.serdes import ExtendedTypeSerDes
+from aws_durable_execution_sdk_python.serdes import SerDesContext
 from aws_durable_execution_sdk_python.types import StepContext
 from aws_durable_execution_sdk_python_testing import DurableFunctionTestRunner
 
 from conftest_nested_payloads import FakeS3
-from nested_payloads.minimal import Manifest, Status, TrackedFile, load_manifest, save_manifest
+from nested_payloads.minimal import Manifest
+from nested_payloads.minimal import Status
+from nested_payloads.minimal import TrackedFile
+from nested_payloads.minimal import load_manifest
+from nested_payloads.minimal import save_manifest
 
 NESTED = Manifest(
     status=Status.READY,

@@ -7,9 +7,11 @@ rest of the suite is written, so they are asserted rather than written down.
 import time
 
 import pytest
-from aws_durable_execution_sdk_python import DurableContext, durable_execution
+from aws_durable_execution_sdk_python import DurableContext
+from aws_durable_execution_sdk_python import durable_execution
 from aws_durable_execution_sdk_python.config import Duration
-from aws_durable_execution_sdk_python.waits import WaitForConditionConfig, WaitForConditionDecision
+from aws_durable_execution_sdk_python.waits import WaitForConditionConfig
+from aws_durable_execution_sdk_python.waits import WaitForConditionDecision
 from aws_durable_execution_sdk_python_testing import DurableFunctionTestRunner
 
 SEEN: list[dict] = []

@@ -31,31 +31,25 @@ from collections.abc import Sequence
 from typing import Any
 
 import boto3
-from aws_durable_execution_sdk_python import (
-    DurableContext,
-    ParallelBranch,
-    durable_execution,
-    durable_parallel_branch,
-)
+from aws_durable_execution_sdk_python import DurableContext
+from aws_durable_execution_sdk_python import ParallelBranch
+from aws_durable_execution_sdk_python import durable_execution
+from aws_durable_execution_sdk_python import durable_parallel_branch
 from aws_durable_execution_sdk_python.concurrency.models import CompletionReason
-from aws_durable_execution_sdk_python.config import (
-    CompletionConfig,
-    Duration,
-    InvokeConfig,
-    ParallelConfig,
-    StepConfig,
-)
+from aws_durable_execution_sdk_python.config import CompletionConfig
+from aws_durable_execution_sdk_python.config import Duration
+from aws_durable_execution_sdk_python.config import InvokeConfig
+from aws_durable_execution_sdk_python.config import ParallelConfig
+from aws_durable_execution_sdk_python.config import StepConfig
 from aws_durable_execution_sdk_python.retries import RetryDecision
 from aws_durable_execution_sdk_python.types import StepContext
 
-from pipeline_chain.logic import (
-    DATASETS,
-    build_load_payload,
-    extract_summary,
-    is_transient,
-    run_date_from_event,
-    staging_key,
-)
+from pipeline_chain.logic import DATASETS
+from pipeline_chain.logic import build_load_payload
+from pipeline_chain.logic import extract_summary
+from pipeline_chain.logic import is_transient
+from pipeline_chain.logic import run_date_from_event
+from pipeline_chain.logic import staging_key
 
 s3_client = boto3.client('s3')
 rds_data_client = boto3.client('rds-data')
@@ -111,11 +105,7 @@ def list_clickstream_keys(run_date: str) -> list[str]:
     paginator = s3_client.get_paginator('list_objects_v2')
     prefix = f'{CLICKSTREAM_PREFIX}dt={run_date}/'
     for page in paginator.paginate(Bucket=CLICKSTREAM_BUCKET, Prefix=prefix):
-        keys.extend(
-            stored_object['Key']
-            for stored_object in page.get('Contents', [])
-            if not stored_object['Key'].endswith('/')
-        )
+        keys.extend(stored_object['Key'] for stored_object in page.get('Contents', []) if not stored_object['Key'].endswith('/'))
     return keys
 
 

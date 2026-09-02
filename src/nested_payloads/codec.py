@@ -10,11 +10,17 @@ rebuilds the dataclass from the field type hints, recursing through lists,
 dicts, tuples, optionals and nested dataclasses.
 """
 
-from dataclasses import fields, is_dataclass
-from datetime import date, datetime
+from dataclasses import fields
+from dataclasses import is_dataclass
+from datetime import date
+from datetime import datetime
 from decimal import Decimal
 from types import UnionType
-from typing import Any, Union, get_args, get_origin, get_type_hints
+from typing import Any
+from typing import Union
+from typing import get_args
+from typing import get_origin
+from typing import get_type_hints
 from uuid import UUID
 
 
@@ -45,9 +51,7 @@ def structure(value: Any, target: Any) -> Any:
 
     if isinstance(target, type) and is_dataclass(target) and isinstance(value, dict):
         hints = get_type_hints(target)
-        return target(
-            **{f.name: structure(value[f.name], hints[f.name]) for f in fields(target) if f.name in value}
-        )
+        return target(**{f.name: structure(value[f.name], hints[f.name]) for f in fields(target) if f.name in value})
 
     if origin in (list, set, frozenset):
         (arg,) = get_args(target)

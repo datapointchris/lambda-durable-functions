@@ -10,7 +10,7 @@ teaching pages carry the reasoning and the runnable code.
 ## Versions this documents
 
 | Package | Version | Index |
-|---|---|---|
+| --- | --- | --- |
 | `aws-durable-execution-sdk-python` | 1.7.0 | [PyPI][pypi-sdk] |
 | `aws-durable-execution-sdk-python-testing` | 1.2.1 | [PyPI][pypi-testing] |
 
@@ -60,7 +60,7 @@ execution_context: ExecutionContext          # attribute, not a method
 ```
 
 | Member | What it is for | Taught in |
-|---|---|---|
+| --- | --- | --- |
 | `step` | Run a side effect once and checkpoint its return value | [steps.md](steps.md) |
 | `wait` | Suspend for a modeled duration and resume | [waits.md](waits.md) |
 | `wait_for_condition` | Poll something external until a strategy says stop | [waits.md](waits.md) |
@@ -97,7 +97,7 @@ Each one is `@dataclass(frozen=True)`. Construct with keywords and pass position
 ### `Duration` stores whole seconds
 
 | Member | Signature | Note |
-|---|---|---|
+| --- | --- | --- |
 | `Duration` | `Duration(seconds: int = 0)` | Negative raises `ValidationError` |
 | `from_seconds` | `Duration.from_seconds(value: float)` | `int(value)`, so fractions truncate |
 | `from_minutes` | `Duration.from_minutes(value: float)` | `int(value * 60)` |
@@ -108,7 +108,7 @@ Each one is `@dataclass(frozen=True)`. Construct with keywords and pass position
 ### `StepConfig` has three fields
 
 | Field | Type | Default |
-|---|---|---|
+| --- | --- | --- |
 | `retry_strategy` | `Callable[[Exception, int], RetryDecision]` \| `None` | `None` |
 | `step_semantics` | `StepSemantics` | `AT_LEAST_ONCE_PER_RETRY` |
 | `serdes` | `SerDes` \| `None` | `None` |
@@ -126,7 +126,7 @@ Each one is `@dataclass(frozen=True)`. Construct with keywords and pass position
 else is shared.
 
 | Field | Type | `MapConfig` default | `ParallelConfig` default |
-|---|---|---|---|
+| --- | --- | --- | --- |
 | `max_concurrency` | `int` \| `None` | `None` | `None` |
 | `completion_config` | `CompletionConfig` | `CompletionConfig()` | `CompletionConfig.all_successful()` |
 | `serdes` | `SerDes` \| `None` | `None` | `None` |
@@ -150,7 +150,7 @@ The default `completion_config` differs. A `map` with no config tolerates every 
 ### `CompletionConfig` decides when a batch stops
 
 | Field | Type | Default |
-|---|---|---|
+| --- | --- | --- |
 | `min_successful` | `int` \| `None` | `None` |
 | `tolerated_failure_count` | `int` \| `None` | `None` |
 | `tolerated_failure_percentage` | `int` \| `float` \| `None` | `None` |
@@ -158,7 +158,7 @@ The default `completion_config` differs. A `map` with no config tolerates every 
 Four constructors ship with it.
 
 | Constructor | Equivalent to |
-|---|---|
+| --- | --- |
 | `CompletionConfig.first_successful()` | `min_successful=1` |
 | `CompletionConfig.all_completed()` | every field `None` |
 | `CompletionConfig.all_successful()` | `tolerated_failure_count=0, tolerated_failure_percentage=0` |
@@ -174,7 +174,7 @@ Four constructors ship with it.
 ### `ItemBatcher`, `ChildConfig`, `CallbackConfig`, `WaitForCallbackConfig`, `InvokeConfig`
 
 | Config | Fields and defaults |
-|---|---|
+| --- | --- |
 | `ItemBatcher` | `max_items_per_batch=0`, `max_item_bytes_per_batch=0`, `batch_input=None` |
 | `ChildConfig` | `serdes`, `item_serdes`, `sub_type`, `summary_generator` all `None`; `is_virtual=False` |
 | `CallbackConfig` | `timeout=Duration()`, `heartbeat_timeout=Duration()`, `serdes=None` |
@@ -196,7 +196,7 @@ Four constructors ship with it.
 Members are written plain here so the rows fit; they are ordinary enum attributes.
 
 | Enum | Members | Meaning |
-|---|---|---|
+| --- | --- | --- |
 | `StepSemantics` | AT_MOST_ONCE_PER_RETRY, AT_LEAST_ONCE_PER_RETRY | Whether an interrupted body re-runs |
 | `NestingType` | NESTED, FLAT | Whether a branch gets its own CONTEXT operation |
 | `JitterStrategy` | NONE, FULL, HALF | How much noise is added to a computed delay |
@@ -217,7 +217,7 @@ execution history.
 ## `BatchResult` is what `map` and `parallel` return
 
 | Member | Type | Note |
-|---|---|---|
+| --- | --- | --- |
 | `all` | `list[BatchItem[R]]` | Every item, whatever its status |
 | `completion_reason` | `CompletionReason` | The only signal that a run was cut short |
 | `get_results()` | `list[R]` | Succeeded items only — failures vanish silently |
@@ -237,7 +237,7 @@ execution history.
 ## Retries: one decision type, two strategy builders, seven presets
 
 | Name | Arguments | For |
-|---|---|---|
+| --- | --- | --- |
 | `RetryDecision` | `(should_retry: bool, delay: Duration)` | What a strategy returns |
 | `RetryDecision.retry` | `(delay: Duration)` | Retry after `delay` |
 | `RetryDecision.no_retry` | `()` | Stop, and fail the operation |
@@ -257,7 +257,7 @@ execution history.
 level.
 
 | Preset | Attempts | Initial | Cap | Backoff | Jitter |
-|---|---|---|---|---|---|
+| --- | --- | --- | --- | --- | --- |
 | `RetryPresets.none()` | 1 | — | — | — | — |
 | `RetryPresets.default()` | 6 | 5s | 60s | 2 | `FULL` |
 | `RetryPresets.transient()` | 3 | 5s | 5m | 2 | `HALF` |
@@ -284,7 +284,7 @@ with_retry(context, func: Callable[[DurableContext, int], T],
 ```
 
 | `WithRetryConfig` field | Default | Effect |
-|---|---|---|
+| --- | --- | --- |
 | `retry_strategy` | `None` | Falls back to bare `RetryStrategyConfig()` |
 | `wrap_with_run_in_child_context` | `True` | Final failure arrives as `CallableRuntimeError` |
 | `child_context_config` | `None` | A `ChildConfig` forwarded when wrapping is on |
@@ -296,7 +296,7 @@ than replaying their checkpoints. [steps.md](steps.md) covers when that matters.
 ## Waits: two decision types that are not interchangeable
 
 | Name | Fields or signature | For |
-|---|---|---|
+| --- | --- | --- |
 | `WaitDecision` | `should_wait: bool`, `delay: Duration` | What `create_wait_strategy` returns |
 | `WaitDecision.wait` / `.no_wait` | classmethods | Building one |
 | `WaitStrategyConfig` | see below | Input to `create_wait_strategy` |
@@ -323,7 +323,7 @@ has no effect in 1.7.0.
 ## Five decorators, and only one of them is required
 
 | Decorator | Wraps | Note |
-|---|---|---|
+| --- | --- | --- |
 | `@durable_execution` | `(event, context) -> Any` | The handler. Takes `boto3_client` and `plugins` |
 | `@durable_step` | `(StepContext, *args) -> T` | Curries; the call returns a closure and runs nothing |
 | `@durable_parallel_branch` | `(DurableContext, *args) -> T` | Fixes the branch name at decoration time |
@@ -367,7 +367,7 @@ BaseException                                 deliberately NOT caught by `except
 ```
 
 | Exception | You catch it when |
-|---|---|
+| --- | --- |
 | `CallableRuntimeError` | Any user-code failure crosses a step, child-context or callback boundary |
 | `StepInterruptedError` | An `AT_MOST_ONCE_PER_RETRY` step was interrupted before its end checkpoint |
 | `CallbackError` | Only inside the child context — `wait_for_callback` re-wraps it on the way out |
@@ -396,7 +396,7 @@ compensation logic that means to run once.
 ## SerDes: one ABC, four implementations, one closed type set
 
 | Name | Module | For |
-|---|---|---|
+| --- | --- | --- |
 | `SerDes` | `serdes` | ABC with `serialize(value, SerDesContext)` and `deserialize(data, SerDesContext)` |
 | `SerDesContext` | `serdes` | `operation_id: str = ""`, `durable_execution_arn: str = ""` |
 | `ExtendedTypeSerDes` | `serdes` | The default codec for steps and branches; tagged envelopes |
@@ -436,7 +436,7 @@ __version__
 Everything else comes from a submodule. This is the table that stops the import hunt.
 
 | You want | Import from |
-|---|---|
+| --- | --- |
 | `Duration`, `StepConfig`, `MapConfig`, `ParallelConfig`, `CompletionConfig` | `...config` |
 | `ItemBatcher`, `ChildConfig`, `CallbackConfig`, `WaitForCallbackConfig`, `InvokeConfig` | `...config` |
 | `StepSemantics`, `NestingType`, `JitterStrategy`, `BatchedInput` | `...config` |
@@ -457,7 +457,7 @@ re-exported at the top level and it is not.
 Full treatment is [testing.md](testing.md). This is the surface.
 
 | Name | Signature or fields | Note |
-|---|---|---|
+| --- | --- | --- |
 | `DurableFunctionTestRunner` | `(handler, poll_interval=1.0)` | Runs the real runtime in-process |
 | `DurableChildContextTestRunner` | subclass of the above | Drives a child-context function directly |
 | `DurableFunctionCloudTestRunner` | `(function_name, region, ...)` | Drives a function deployed to AWS |
@@ -466,7 +466,7 @@ Full treatment is [testing.md](testing.md). This is the surface.
 `DurableFunctionTestRunner` is a context manager. These are its methods.
 
 | Method | Arguments | Note |
-|---|---|---|
+| --- | --- | --- |
 | `runner.run` | `(input: str` \| `None, timeout=900)` | Blocks and returns a `DurableFunctionTestResult` |
 | `runner.run_async` | `(input, timeout)` | Returns the execution ARN and does not block |
 | `runner.wait_for_result` | `(arn, timeout)` | Blocks on an async run |
@@ -476,7 +476,7 @@ Full treatment is [testing.md](testing.md). This is the surface.
 | `runner.send_callback_heartbeat` | `(callback_id)` | Resets the heartbeat deadline |
 
 | Result member | Type | Note |
-|---|---|---|
+| --- | --- | --- |
 | `result.status` | `InvocationStatus` | `SUCCEEDED` or `FAILED` |
 | `result.result` | `OperationPayload` \| `None` | `None` when the execution failed — narrow before parsing |
 | `result.error` | `ErrorObject` \| `None` | Why it failed |
@@ -490,7 +490,7 @@ or a parallel branch is not top level, so reach it through `get_context(...)` tw
 `get_all_operations()`.
 
 | Operation type | Extra fields |
-|---|---|
+| --- | --- |
 | `Operation` | `operation_id`, `operation_type`, `status`, `parent_id`, `name`, `sub_type`, timestamps |
 | `ContextOperation` | `child_operations`, `result`, `error`, plus its own `get_step` / `get_context` |
 | `StepOperation` | `attempt`, `next_attempt_timestamp`, `result`, `error` |

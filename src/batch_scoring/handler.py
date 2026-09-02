@@ -16,32 +16,32 @@ tests/conftest_batch_scoring.py.
 import json
 import os
 from collections.abc import Sequence
-from typing import Any, cast
+from typing import Any
+from typing import cast
 
 import boto3
-from aws_durable_execution_sdk_python import DurableContext, durable_execution
-from aws_durable_execution_sdk_python.concurrency.models import BatchResult, CompletionReason
-from aws_durable_execution_sdk_python.config import (
-    BatchedInput,
-    CompletionConfig,
-    Duration,
-    ItemBatcher,
-    JitterStrategy,
-    MapConfig,
-    StepConfig,
-)
-from aws_durable_execution_sdk_python.retries import RetryStrategyConfig, create_retry_strategy
+from aws_durable_execution_sdk_python import DurableContext
+from aws_durable_execution_sdk_python import durable_execution
+from aws_durable_execution_sdk_python.concurrency.models import BatchResult
+from aws_durable_execution_sdk_python.concurrency.models import CompletionReason
+from aws_durable_execution_sdk_python.config import BatchedInput
+from aws_durable_execution_sdk_python.config import CompletionConfig
+from aws_durable_execution_sdk_python.config import Duration
+from aws_durable_execution_sdk_python.config import ItemBatcher
+from aws_durable_execution_sdk_python.config import JitterStrategy
+from aws_durable_execution_sdk_python.config import MapConfig
+from aws_durable_execution_sdk_python.config import StepConfig
+from aws_durable_execution_sdk_python.retries import RetryStrategyConfig
+from aws_durable_execution_sdk_python.retries import create_retry_strategy
 from aws_durable_execution_sdk_python.types import StepContext
 
-from batch_scoring.logic import (
-    ScoringRunAborted,
-    batch_operation_name,
-    batch_summary,
-    group_into_batches,
-    partition_scorable,
-    roll_up_batches,
-    score_rows,
-)
+from batch_scoring.logic import ScoringRunAborted
+from batch_scoring.logic import batch_operation_name
+from batch_scoring.logic import batch_summary
+from batch_scoring.logic import group_into_batches
+from batch_scoring.logic import partition_scorable
+from batch_scoring.logic import roll_up_batches
+from batch_scoring.logic import score_rows
 
 s3_client = boto3.client('s3')
 sagemaker_runtime_client = boto3.client('sagemaker-runtime')
@@ -138,9 +138,7 @@ def lambda_handler(event: dict, context: DurableContext) -> dict:
             rows = load_feature_rows(batch)
             scorable, rejected = partition_scorable(rows)
             probabilities = invoke_scoring_endpoint(scorable)
-            step_context.logger.info(
-                'batch %d: %d scorable, %d rejected', index, len(scorable), len(rejected)
-            )
+            step_context.logger.info('batch %d: %d scorable, %d rejected', index, len(scorable), len(rejected))
             return {'scored': score_rows(scorable, probabilities), 'rejected': list(rejected)}
 
         scored = batch_context.step(score, name='score', config=step_config)
@@ -171,8 +169,7 @@ def lambda_handler(event: dict, context: DurableContext) -> dict:
     # BatchResult that says so, and publishing its partial scores would read as a full night.
     if batch_result.completion_reason is CompletionReason.FAILURE_TOLERANCE_EXCEEDED:
         raise ScoringRunAborted(
-            f'{batch_result.failure_count} of {batch_result.total_count} batches failed, '
-            f'tolerating {TOLERATED_BATCH_FAILURES}'
+            f'{batch_result.failure_count} of {batch_result.total_count} batches failed, tolerating {TOLERATED_BATCH_FAILURES}'
         )
 
     summary = roll_up_batches(batch_result.get_results())

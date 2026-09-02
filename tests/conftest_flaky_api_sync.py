@@ -15,7 +15,8 @@ os.environ.setdefault('PARTNER_API_TOKEN', 'test-token')
 os.environ.setdefault('SUBSCRIBER_TABLE', 'test-subscribers')
 
 from flaky_api_sync import handler as handler_module  # noqa: E402
-from flaky_api_sync.logic import DownloadUrlExpired, PartnerApiError  # noqa: E402
+from flaky_api_sync.logic import DownloadUrlExpired  # noqa: E402
+from flaky_api_sync.logic import PartnerApiError  # noqa: E402
 
 EXPORT_ID = 'exp_7742'
 DOWNLOAD_URL = 'https://cdn.partner-billing.test/exp_7742.json?signature=abc'

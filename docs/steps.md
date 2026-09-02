@@ -37,7 +37,7 @@ Only that callable takes a parameter. The function it calls takes whatever argum
 constructions satisfy the signature, and they are not equally good.
 
 | Spelling | Statements | Gets `step_context` | Self-naming | Silent no-op |
-|---|---|---|---|---|
+| --- | --- | --- | --- | --- |
 | `@durable_step` closure | many | yes, first parameter | yes | yes |
 | `lambda _: ...` | one expression | discarded by convention | no | no |
 | Nested `def` | many | yes, only parameter | no | no |
@@ -129,7 +129,7 @@ arguments bound at each call site. That is the case it was built for, and it is 
 Three loggers are reachable from inside a handler, and they behave differently on replay.
 
 | Logger | Suppressed while replaying | Repeats on replay |
-|---|---|---|
+| --- | --- | --- |
 | `step_context.logger` | never needs to be | no — a succeeded body is not re-entered |
 | `context.logger` | yes, until the replay boundary | yes, past the last checkpointed operation |
 | `logging.getLogger(__name__)` | no | yes, every pass |
@@ -172,7 +172,7 @@ Each `context.step` writes two operations to durable state, and the second one b
 The sequencing is in [`operation/step.py`][sdk-step].
 
 | Stage | Blocking | What it costs |
-|---|---|---|
+| --- | --- | --- |
 | START, `AT_LEAST_ONCE_PER_RETRY` | no, queued | nothing on the critical path |
 | START, `AT_MOST_ONCE_PER_RETRY` | yes | one batcher wait plus one round trip |
 | Body | — | your own work |
@@ -258,7 +258,7 @@ RetryDecision.no_retry()                        # should_retry=False
 The presets in [`retries.py`][sdk-retries]:
 
 | Preset | Attempts | Initial delay | Cap | Backoff | Jitter |
-|---|---|---|---|---|---|
+| --- | --- | --- | --- | --- | --- |
 | `RetryPresets.none()` | 1 | — | — | — | — |
 | `RetryPresets.default()` | 6 | 5s | 60s | ×2 | full |
 | `RetryPresets.transient()` | 3 | 5s | 5min | ×2 | half |
@@ -354,7 +354,7 @@ Three more facts about retries worth knowing before you set a delay:
 ### `step_semantics` — the two behave identically until an invocation dies
 
 | | `AT_LEAST_ONCE_PER_RETRY` (default) | `AT_MOST_ONCE_PER_RETRY` |
-|---|---|---|
+| --- | --- | --- |
 | START checkpoint | queued, non-blocking | synchronous, blocks the body |
 | Body raises an exception | body re-runs on the retry | body re-runs on the retry |
 | Invocation dies mid-body | body runs again | body is not re-entered |
@@ -545,7 +545,7 @@ Only `@durable_step` sets `_original_name`. `__name__` is never read, despite a 
 otherwise. Measured 2026-08-19 on SDK 1.7.0:
 
 | Callable | `name=` omitted | Resolved name |
-|---|---|---|
+| --- | --- | --- |
 | `@durable_step` closure | yes | `'fetch_quota'` |
 | Plain named `def` | yes | `None` |
 | `lambda _: ...` | yes | `None` |
@@ -580,7 +580,7 @@ no error raised. Keep names unique within a context.
 ## Where to go next
 
 | Page | Answers |
-|---|---|
+| --- | --- |
 | [index.md](index.md) | What this site covers, and the example the whole of it is built on |
 | [concepts.md](concepts.md) | What replay is, and why the handler body re-enters |
 | [waits.md](waits.md) | `wait`, `wait_for_condition`, and `wait_for_callback` |
@@ -601,4 +601,3 @@ Upstream, on how to shape a step rather than how to write one:
 [sdk-serdes]: https://github.com/aws/aws-durable-execution-sdk-python/blob/main/packages/aws-durable-execution-sdk-python/src/aws_durable_execution_sdk_python/serdes.py
 [sdk-step]: https://github.com/aws/aws-durable-execution-sdk-python/blob/main/packages/aws-durable-execution-sdk-python/src/aws_durable_execution_sdk_python/operation/step.py
 [sdk-state]: https://github.com/aws/aws-durable-execution-sdk-python/blob/main/packages/aws-durable-execution-sdk-python/src/aws_durable_execution_sdk_python/state.py
-[sdk-constants]: https://github.com/aws/aws-durable-execution-sdk-python/blob/main/packages/aws-durable-execution-sdk-python/src/aws_durable_execution_sdk_python/constants.py
