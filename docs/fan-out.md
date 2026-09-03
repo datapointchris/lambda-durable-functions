@@ -6,7 +6,7 @@ actually do, how partial failure is reported, and where the resulting operations
 execution history. It is for someone who has read [Concepts](concepts.md) and [Steps](steps.md) and
 now has more than one thing to run.
 
-Every claim here is measured against SDK 1.7.0 and testing 1.2.1 on 2026-08-19, either by the
+Every claim here is measured against SDK 1.7.0 and testing 1.2.1, either by the
 repository's own suite or by a probe whose output is quoted. The two worked examples are
 `src/batch_scoring/` (a nightly credit-risk run, 30 passing tests) and `src/pipeline_chain/` (three
 parallel extracts and a handoff, 21 passing tests).
@@ -123,7 +123,7 @@ def test_the_endpoint_is_called_once_per_batch_not_once_per_application(scoring)
 ### `ItemBatcher` is accepted and never read
 
 !!! danger "`MapConfig.item_batcher` does nothing in SDK 1.7.0"
-    Measured 2026-08-19. `map_handler` in
+    Measured. `map_handler` in
     [`operation/map.py`](https://github.com/aws/aws-durable-execution-sdk-python/blob/main/packages/aws-durable-execution-sdk-python/src/aws_durable_execution_sdk_python/operation/map.py)
     builds one `Executable` per input, and `MapExecutor.execute_item` passes `self.items[index]`
     raw. Nothing anywhere in the package constructs the `BatchedInput` that `map`'s own signature
@@ -207,7 +207,7 @@ def test_max_concurrency_holds_the_third_extract_back(sources: Sources):
 one level below that. `FLAT` makes the child context virtual: it skips its own START, SUCCEED and
 FAIL checkpoints, and the operations inside it report to the parent instead.
 
-Measured 2026-08-19 with a two-item map running one step per iteration, walking
+Measured with a two-item map running one step per iteration, walking
 `result.operations` recursively:
 
 ```text
@@ -314,7 +314,7 @@ The decorated function's parameters after the context are bound at the call site
 !!! warning "An unnamed `@durable_parallel_branch()` does not fall back to the function name"
     Its docstring says "If None, the function's `__name__` is used". The implementation passes
     `name=name` straight into `ParallelBranch`, and `ParallelExecutor.get_iteration_name` only
-    consults the branch name when it is not `None`. Measured 2026-08-19: a decorated branch with no
+    consults the branch name when it is not `None`. Measured: a decorated branch with no
     name appears in the history as `parallel-branch-0`. Always pass `name=`.
 
 `ParallelBranch` is itself callable and delegates to its wrapped function, which is why it can be
@@ -334,7 +334,7 @@ failures. All three fields are `None` by default. Three presets are available on
 `all_successful()` sets both tolerances to `0`. A fourth, `first_completed()`, is commented out in
 the source and cannot be called.
 
-Measured 2026-08-19 over four map items, one of which always raises:
+Measured over four map items, one of which always raises:
 
 | Config | `completion_reason` | Results kept |
 | --- | --- | --- |
@@ -383,7 +383,7 @@ same effect was measured in `src/batch_scoring/` at three failures against a tol
 five items — success 1, failure 3, started 1.
 
 !!! note "`min_successful` stops the waiting, not the work"
-    Measured 2026-08-19 with two branches and `min_successful=1`: the batch returned
+    Measured with two branches and `min_successful=1`: the batch returned
     `MIN_SUCCESSFUL_REACHED` with `success_count=1` and `started_count=1`, and the slow branch's
     body had already been entered. Threads already running keep running in the background and raise
     `OrphanedChildException` on their next attempt to checkpoint. A branch with side effects is not

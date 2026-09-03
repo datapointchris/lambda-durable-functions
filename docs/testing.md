@@ -480,7 +480,7 @@ def get_step(self, name: str) -> StepOperation:
 
     `cast` is a promise to the type checker, not a check. Asking for a step by the name of a wait
     returns the `WaitOperation` wearing a `StepOperation` annotation, and the failure arrives later,
-    on attribute access. Measured 2026-08-19:
+    on attribute access. Measured:
 
     ```text
     get_step('pause').attempt → AttributeError: 'WaitOperation' object has no attribute 'attempt'
@@ -571,7 +571,7 @@ Which call produces which:
 
 `StepOperation.result` is whatever was written to the checkpoint, which is the **serialized** form,
 not the value. Steps, child contexts and parallel branches fall back to the extended codec.
-Measured 2026-08-19 on a step returning `{'n': 1, 'when': 'now'}`:
+Measured on a step returning `{'n': 1, 'when': 'now'}`:
 
 ```text
 step.result       '{"t":"m","v":{"n":{"t":"i","v":1},"when":{"t":"s","v":"now"}}}'
@@ -1402,7 +1402,7 @@ def test_a_modeled_wait_costs_real_wall_clock_time():
     assert time.monotonic() - start >= 3
 ```
 
-Measured 2026-08-19 with a ten-second wait:
+Measured with a ten-second wait:
 
 ```text
 modeled 10s wait took 10.31s wall clock -> InvocationStatus.SUCCEEDED

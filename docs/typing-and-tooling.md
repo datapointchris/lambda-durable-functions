@@ -1,6 +1,6 @@
 # Type checking and linting durable handlers
 
-**Measured 2026-08-18** against SDK 1.7.0, basedpyright, mypy and ruff.
+Measured against SDK 1.7.0, with basedpyright, mypy and ruff.
 
 ## `Argument missing for parameter` means the SDK is not installed where the checker looks
 

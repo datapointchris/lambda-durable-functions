@@ -4,7 +4,7 @@ A worked reference for AWS Lambda durable functions in Python. Every claim here 
 this repository that runs, and by the shipped SDK source rather than the documentation.
 
 Measured against `aws-durable-execution-sdk-python` **1.7.0** and
-`aws-durable-execution-sdk-python-testing` **1.2.1**, on 2026-08-19.
+`aws-durable-execution-sdk-python-testing` **1.2.1**.
 
 Source: [datapointchris/lambda-durable-functions](https://github.com/datapointchris/lambda-durable-functions).
 

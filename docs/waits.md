@@ -7,7 +7,7 @@ It is for someone who has read [Concepts](concepts.md) and now has to decide whi
 how to configure it, and what breaks when they get it wrong.
 
 Every claim marked *measured* was run against aws-durable-execution-sdk-python 1.7.0 and
-aws-durable-execution-sdk-python-testing 1.2.1 on 2026-08-19, in this repository's `.venv`.
+aws-durable-execution-sdk-python-testing 1.2.1, in this repository's `.venv`.
 
 ## Four calls wait, and each one suspends the invocation
 
@@ -79,8 +79,8 @@ def waits(_event: dict, context: DurableContext) -> str:
     `Duration.from_seconds` casts with `int()`, so `Duration.from_seconds(0.5).to_seconds()` is `0`
     — measured. `context.wait` then raises `ValidationError`, which is not caught anywhere in the
     SDK, so the execution ends `InvocationStatus.FAILED` with
-    `ErrorObject(message='duration must be at least 1 second', type='ValidationError')`. Measured on
-    2026-08-19. A fractional duration is never a short wait; it is a dead function.
+    `ErrorObject(message='duration must be at least 1 second', type='ValidationError')`. Measured.
+    A fractional duration is never a short wait; it is a dead function.
 
 A modeled wait was measured at one operation and real wall-clock time. A 2-second wait took 2.31s,
 recorded `[('cool_off', 'WaitOperation')]` at the top level, and carried a
@@ -238,7 +238,7 @@ says not to rely on.
 
 ## `wait_for_condition` is one operation, however many polls it makes
 
-There is no separate operation per poll. Measured with a three-poll condition on 2026-08-19:
+There is no separate operation per poll. Measured with a three-poll condition:
 
 ```text
 ops                  : [('probe', 'StepOperation', OperationSubType.WAIT_FOR_CONDITION)]
@@ -283,7 +283,7 @@ else:
     and proposes keying on the attempt count instead.
 
 The checkpointed value is the *serialized* state, not the state object, which narrows when the guard
-actually bites. Measured against `ExtendedTypeSerDes` on 2026-08-19, every falsy Python value
+actually bites. Measured against `ExtendedTypeSerDes`, every falsy Python value
 serializes to a non-empty string:
 
 ```text
@@ -522,7 +522,7 @@ SUBMITTER_STEP_NAME = 'review submitter'
 
 !!! warning "`runner.wait_for_callback` matches the callback operation, not the name you passed"
     Asking the runner for `'review'` returns `None` forever and the call raises `TimeoutError` after
-    its timeout. It has to be asked for `'review create callback id'`. Measured on 2026-08-19.
+    its timeout. It has to be asked for `'review create callback id'`. Measured.
     [Testing](testing.md) covers driving a callback from a test.
 
 The submitter runs in an ordinary step, which means at-least-once semantics apply to it. Posting the
@@ -653,8 +653,7 @@ which is what you want.
 ## Durations in a test are module constants the test shrinks
 
 testing 1.2.1 has no clock skipping. `SkipClock` and a `skip_time` flag exist on `main` and are not
-released. So every modeled wait costs real wall-clock time, measured at 2.31s for a 2-second wait on
-2026-08-19.
+released. So every modeled wait costs real wall-clock time, measured at 2.31s for a 2-second wait.
 
 The consequence for design is concrete: a handler's durations are module-level constants, never
 literals inside the call, so a test can shrink them.

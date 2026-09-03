@@ -9,7 +9,7 @@ log inside it, what it costs, how to configure it, and how to name it. [concepts
 covers replay itself, [waits.md](waits.md) covers the operations that suspend, and
 [sdk-internals.md](sdk-internals.md) carries the shipped-source proof behind the claims below.
 
-**Measured 2026-08-19** against `aws-durable-execution-sdk-python` **1.7.0** and
+Measured against `aws-durable-execution-sdk-python` **1.7.0** and
 `aws-durable-execution-sdk-python-testing` **1.2.1**, both from PyPI. Every sample is code from this
 repository, and the test suite behind it passes. Re-measure before trusting any of it against a
 newer release.
@@ -59,7 +59,7 @@ fetch_quota('acct-42')               →  (StepContext) -> int
 context.step(fetch_quota('acct-42')) →  int
 ```
 
-Measured 2026-08-19 on SDK 1.7.0: calling `fetch_quota('acct-42')` returns a `function`, the body
+Measured on SDK 1.7.0: calling `fetch_quota('acct-42')` returns a `function`, the body
 does not run, and the returned object carries `_original_name == 'fetch_quota'`.
 
 !!! danger "A decorated call with no `context.step` around it is a silent no-op"
@@ -542,7 +542,7 @@ return name or getattr(func, '_original_name', None)
 ```
 
 Only `@durable_step` sets `_original_name`. `__name__` is never read, despite a docstring claiming
-otherwise. Measured 2026-08-19 on SDK 1.7.0:
+otherwise. Measured on SDK 1.7.0:
 
 | Callable | `name=` omitted | Resolved name |
 | --- | --- | --- |

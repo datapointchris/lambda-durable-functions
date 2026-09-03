@@ -4,7 +4,7 @@ What the Python durable execution SDK actually does, read from the shipped sourc
 documentation. Every claim here was measured against the versions named below; re-measure before
 trusting any of it against a newer release.
 
-**Measured 2026-08-18** against `aws-durable-execution-sdk-python` **1.7.0** and
+Measured against `aws-durable-execution-sdk-python` **1.7.0** and
 `aws-durable-execution-sdk-python-testing` **1.2.1**, both from PyPI.
 
 ```bash

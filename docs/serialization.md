@@ -3,7 +3,7 @@
 How to get a nested dataclass through a checkpoint, and how to store the same object in S3 without
 writing the conversion twice.
 
-Measured against `aws-durable-execution-sdk-python` **1.7.0** on 2026-08-19. Working code and its
+Measured against `aws-durable-execution-sdk-python` **1.7.0**. Working code and its
 tests are `src/nested_payloads/` and `tests/test_nested_payloads.py`.
 
 ## The default codec carries a closed set of types
@@ -288,7 +288,7 @@ converter.register_structure_hook(datetime, lambda value, _type: datetime.fromis
 !!! warning "cattrs does not handle `datetime` out of the box"
     Without those two hooks, `unstructure` leaves a `datetime` object and `json.dumps` raises
     `TypeError: Object of type datetime is not JSON serializable` — at the checkpoint, after the
-    step body has run. Measured while writing this page.
+    step body has run. Measured.
 
 With the hooks registered, cattrs emits the same wire form as the recursive codec, which the repo
 asserts, so the store reads either.

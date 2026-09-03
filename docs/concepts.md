@@ -6,7 +6,7 @@ checkpoint is, why the handler body re-runs from the top on every resume, what d
 forbids, and where a given line of code belongs. Read it before [Steps](steps.md),
 [Waits](waits.md) and [Fan-out](fan-out.md), which assume all of it.
 
-**Measured 2026-08-19** against `aws-durable-execution-sdk-python` **1.7.0**,
+Measured against `aws-durable-execution-sdk-python` **1.7.0**,
 `aws-durable-execution-sdk-python-testing` **1.2.1**, and the Lambda API model shipped in botocore
 1.43.74. Every number and every transcript below came from running the code in this repository.
 Re-measure before trusting any of it against a newer release.
@@ -78,7 +78,7 @@ its executor returns the deserialized checkpoint and never calls your function.
 ### One `landing_zone` execution, measured across two invocations
 
 The figure below is not illustrative. It is a real run of [`src/landing_zone/handler.py`][handler]
-driven through `DurableFunctionTestRunner` on 2026-08-19, with a fake S3 that reports an active drop
+driven through `DurableFunctionTestRunner`, with a fake S3 that reports an active drop
 on the first listing and a settled one afterwards.
 
 ```text
@@ -169,7 +169,7 @@ exact source; the consequence is the next section, and it is the most expensive 
 ## Divergence is silent, and a step collects another step's result
 
 The SDK ships an exception named `NonDeterministicExecutionError` in [`exceptions.py`][exceptions].
-Measured 2026-08-19 against SDK 1.7.0: **nothing in the package raises it, and nothing in the
+Measured against SDK 1.7.0: **nothing in the package raises it, and nothing in the
 testing package raises it either.** It is a defined type with no throw site. There is no
 determinism checker.
 
@@ -284,7 +284,7 @@ docstring says so.
 ### Rule 3, measured
 
 CPython randomizes string hashing per process, so a `set` of keys iterates in a different order in
-each one. A durable execution spans processes by construction. Three runs on 2026-08-19:
+each one. A durable execution spans processes by construction. Three runs:
 
 ```text
 ['landing/part-0001.csv', 'landing/part-0004.csv', 'landing/part-0002.csv', 'landing/part-0003.csv']
@@ -323,8 +323,7 @@ Durable state is what a step returns.
 context's next operation already has a checkpoint** — nothing about whether a line of code has run
 before.
 
-Tracing it at two fixed points in a body that waits once and then retries a step twice, measured
-2026-08-19:
+Tracing it at two fixed points in a body that waits once and then retries a step twice, measured:
 
 ```text
 TRACE : ('body-top',  False)   ← invocation 1: no history at all
@@ -444,7 +443,7 @@ practices](https://docs.aws.amazon.com/lambda/latest/dg/durable-best-practices.h
 ## Timeout, retention and execution naming are function configuration
 
 None of this is handler code. It is `DurableConfig` on the function, and the values below are the
-bounds declared in the Lambda API model shipped in botocore 1.43.74, read on 2026-08-19.
+bounds declared in the Lambda API model shipped in botocore 1.43.74.
 
 | Field | Unit | Min | Max | Governs |
 | --- | --- | --- | --- | --- |

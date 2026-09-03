@@ -14,7 +14,7 @@ teaching pages carry the reasoning and the runnable code.
 | `aws-durable-execution-sdk-python` | 1.7.0 | [PyPI][pypi-sdk] |
 | `aws-durable-execution-sdk-python-testing` | 1.2.1 | [PyPI][pypi-testing] |
 
-Every field name, default and enum member below was read from the installed source on **2026-08-19**.
+Every field name, default and enum member below was read from the installed source.
 Re-measure before trusting any of it against a newer release — several of the findings on this page
 are implementation detail rather than documented contract.
 
@@ -116,7 +116,7 @@ Each one is `@dataclass(frozen=True)`. Construct with keywords and pass position
 !!! danger "No `retry_strategy` means six attempts over about a minute"
 
     A step with no `StepConfig` gets `RetryPresets.default()` — six attempts, 5s initial delay,
-    exponential to a 60s cap, full jitter (`operation/step.py` line 294, measured 2026-08-19). The
+    exponential to a 60s cap, full jitter (`operation/step.py` line 294). The
     default retryable-error pattern is `re.compile(r".*")`, so every exception retries, including a
     permanent one. Give any step whose failure path matters an explicit strategy.
 
@@ -143,7 +143,7 @@ The default `completion_config` differs. A `map` with no config tolerates every 
 
     `map_handler` builds one `Executable` per input and `MapExecutor.execute_item` passes the raw
     item. Nothing in the package constructs the `BatchedInput` that `map`'s own signature offers.
-    Measured 2026-08-19: `ItemBatcher(max_items_per_batch=2)` over four strings still yields four
+    Measured: `ItemBatcher(max_items_per_batch=2)` over four strings still yields four
     iterations, each receiving a `str`. Group before the map. `tests/test_batch_scoring.py` pins
     this as an executable test.
 
@@ -210,8 +210,8 @@ execution history.
 !!! note "`STARTED` is how a canceled branch is recorded"
 
     When the tolerance is exceeded the executor cancels what has not finished, and those items stay
-    `STARTED`. So `success_count + failure_count` can be less than `total_count`. Measured
-    2026-08-19: three failures against a tolerance of two, out of five items, gave success 1,
+    `STARTED`. So `success_count + failure_count` can be less than `total_count`. Measured:
+    three failures against a tolerance of two, out of five items, gave success 1,
     failure 3, started 1.
 
 ## `BatchResult` is what `map` and `parallel` return
@@ -273,7 +273,7 @@ computed. The other six carry the delay columns shown.
 
     A step with no `retry_strategy` gets `RetryPresets.default()`: six attempts, capped at 60s.
     A `with_retry` block with no `retry_strategy` gets `create_retry_strategy()`, which is bare
-    `RetryStrategyConfig()`: three attempts, capped at five minutes. Measured 2026-08-19 in
+    `RetryStrategyConfig()`: three attempts, capped at five minutes. Measured in
     `operation/step.py` line 294 and `retries.py` line 353.
 
 ### `with_retry` retries a block of durable operations
