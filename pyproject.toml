@@ -74,26 +74,35 @@ warn_return_any = false
 check-filenames = true
 # The SDK's own enum member and wire value.
 ignore-regex = '\bCANCELLED\b'
+check-hidden = true
+builtin = "clear,rare"
+uri-ignore-words-list = "*"
 
 [tool.forge]
 # Keys the shared toolchain standard owns, written by its generator.
 # Dropping one from the template removes it here on the next sync; a key absent
 # from this list belongs to the project and is never touched. Do not hand-edit.
 managed = [
+    ["ruff", "line-length"],
     ["ruff", "format", "quote-style"],
     ["ruff", "format", "indent-style"],
     ["ruff", "format", "skip-magic-trailing-comma"],
     ["ruff", "format", "line-ending"],
     ["ruff", "format", "docstring-code-format"],
+    ["ruff", "lint", "select"],
     ["ruff", "lint", "ignore"],
     ["ruff", "lint", "isort", "force-single-line"],
     ["ruff", "lint", "per-file-ignores", "__init__.py"],
     ["mypy", "pretty"],
+    ["mypy", "ignore_missing_imports"],
     ["mypy", "check_untyped_defs"],
     ["mypy", "warn_return_any"],
     ["pyright", "typeCheckingMode"],
     ["pyright", "analyzeUnannotatedFunctions"],
     ["codespell", "check-filenames"],
+    ["codespell", "check-hidden"],
+    ["codespell", "builtin"],
+    ["codespell", "uri-ignore-words-list"],
     ["pytest", "ini_options", "verbosity_assertions"],
     ["pytest", "ini_options", "minversion"],
     ["pytest", "ini_options", "testpaths"],
