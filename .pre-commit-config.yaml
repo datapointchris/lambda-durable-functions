@@ -106,6 +106,15 @@ repos:
       # two-letter sequence codespell corrects. Nobody writes prose in them and
       # nobody would fix a hit, since the next install would put it back.
       - id: codespell
+        # `clear,rare` is codespell's own default and is restated because naming
+        # any dictionary replaces the list rather than adding to it. The third
+        # makes American spelling a gate instead of a habit — the -ise, -our and
+        # -re families become findings at the moment they are typed.
+        #
+        # No example is spelled out here, for the reason the go.mod note below
+        # gives: an example would trip this hook on this very file, in every repo
+        # this block is generated into.
+        args: ['--builtin', 'clear,rare,en-GB_to_en-US']
         # The second alternation is sops output. Ciphertext is base64, so it
         # produces the same false hits a lock file's hashes do. The plain
         # `secrets.yaml` name is covered alongside the *.enc.env convention.
@@ -116,7 +125,14 @@ repos:
         # module name codespell wants spelled differently, and no edit fixes it —
         # the next `go mod tidy` writes it straight back. Naming such a module
         # here would trip this hook on this very file.
-        exclude: '(^|/)(.*-lock\.json|.*\.lock|uv\.lock|package-lock\.json|go\.sum|go\.mod|secrets?[^/]*\.(ya?ml|env|json)|.*\.enc\.[^/]+)$'
+        #
+        # A delimited data file is values rather than prose, and a British place
+        # or company name in one is the record. Respelling it corrupts the data,
+        # so the whole file class is out of scope the way a lock file is — one
+        # repo's datasets carry 3,575 such values across thirteen files, and not
+        # one of them is a misspelling. `.tsv` is named beside `.csv` as the same
+        # format with a different delimiter.
+        exclude: '(^|/)(.*-lock\.json|.*\.lock|uv\.lock|package-lock\.json|go\.sum|go\.mod|secrets?[^/]*\.(ya?ml|env|json)|.*\.enc\.[^/]+|.*\.[ct]sv)$'
 
 # generated:refcheck - Reference checking
   #
