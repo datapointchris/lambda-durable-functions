@@ -50,7 +50,7 @@ def staging_key(prefix: str, dataset: str, run_date: str) -> str:
 def extract_summary(dataset: str, key: str, row_count: int) -> dict:
     """What a branch returns.
 
-    Plain JSON types only: a BatchResult item is serialised with the default
+    Plain JSON types only: a BatchResult item is serialized with the default
     codec, which rejects a dataclass.
     """
     return {'dataset': dataset, 'stagingKey': key, 'rowCount': row_count}

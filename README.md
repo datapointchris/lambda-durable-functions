@@ -64,7 +64,7 @@ A little over two minutes, almost all of it real waits — the released test run
 ## Scope
 
 Deployment, Terraform, versions and aliases, the S3 trigger wiring and the `durable_config` replace
-behaviour are in the published guide at
+behavior are in the published guide at
 [docs.ichrisbirch.com/aws/lambda-durable-functions](https://docs.ichrisbirch.com/aws/lambda-durable-functions/).
 That half is not duplicated here.
 

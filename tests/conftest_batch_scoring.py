@@ -68,7 +68,7 @@ class FakeScoringEndpoint:
     `permanent` maps an application id to the error code raised on every call that
     carries it; `transient` maps one to a number of calls that raise a throttle
     before succeeding. The map runs iterations on real threads, so the concurrency
-    counter is what proves `max_concurrency` is honoured.
+    counter is what proves `max_concurrency` is honored.
     """
 
     def __init__(

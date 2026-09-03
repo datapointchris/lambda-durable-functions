@@ -68,7 +68,7 @@ def should_retry_charge(*, interrupted: bool, attempts_made: int, max_attempts: 
     """An interrupted charge may already have reached the processor, so it is never retried.
 
     The saga cannot tell a lost response from a lost request. Retrying resolves
-    that ambiguity in the customer's disfavour; failing the stage sends it to
+    that ambiguity in the customer's disfavor; failing the stage sends it to
     compensation, which asks the processor what actually happened.
     """
     if interrupted:

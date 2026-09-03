@@ -86,7 +86,7 @@ The name travels beside it in `OperationIdentifier(name=...)` and nothing in the
 
 **Do not design around that.** The SDK's own docstring says the id format is "subject to change
 without notice", and AWS's step-design guidance states names are part of a step's deterministic
-identity. Keep names static and unique, per the guidance, and treat the ordinal behaviour as an
+identity. Keep names static and unique, per the guidance, and treat the ordinal behavior as an
 implementation detail you happen to have read.
 
 ## The default serializer carries a closed set of types

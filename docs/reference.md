@@ -191,7 +191,7 @@ Four constructors ship with it.
     heartbeat. An unset `heartbeat_timeout` therefore means no heartbeat deadline at all, not a
     deadline of zero.
 
-## Five enumerations decide behaviour
+## Five enumerations decide behavior
 
 Members are written plain here so the rows fit; they are ordinary enum attributes.
 
@@ -207,7 +207,7 @@ Members are written plain here so the rows fit; they are ordinary enum attribute
 about 30% of operation consumption and the cost at branches no longer appearing separately in
 execution history.
 
-!!! note "`STARTED` is how a cancelled branch is recorded"
+!!! note "`STARTED` is how a canceled branch is recorded"
 
     When the tolerance is exceeded the executor cancels what has not finished, and those items stay
     `STARTED`. So `success_count + failure_count` can be less than `total_count`. Measured
@@ -386,7 +386,7 @@ BaseException                                 deliberately NOT caught by `except
 
     They are how the runtime suspends and resumes, in the same register as `KeyboardInterrupt`.
     A broad `except Exception` in a step body will not swallow them, which is the intended
-    behaviour. Never widen a handler to `except BaseException` inside durable code.
+    behavior. Never widen a handler to `except BaseException` inside durable code.
 
 `InvocationError` and `ExecutionError` are the fork that decides what happens to the invocation.
 An `ExecutionError` ends the execution FAILED. An `InvocationError` is re-raised out of the handler

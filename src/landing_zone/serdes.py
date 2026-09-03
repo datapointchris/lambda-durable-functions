@@ -1,4 +1,4 @@
-"""Checkpoint serialisation for types the SDK's default codec does not carry.
+"""Checkpoint serialization for types the SDK's default codec does not carry.
 
 `ExtendedTypeSerDes` handles None, str, int, float, bool, bytes, UUID, Decimal,
 datetime, date, tuple, list, dict and BatchResult. Anything else raises

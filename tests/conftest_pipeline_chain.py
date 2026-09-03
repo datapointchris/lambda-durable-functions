@@ -62,7 +62,7 @@ INVENTORY_ITEMS = [
 
 
 class ThrottlingException(Exception):
-    """Named to match the botocore error `is_transient` recognises."""
+    """Named to match the botocore error `is_transient` recognizes."""
 
 
 class SchemaMismatch(Exception):

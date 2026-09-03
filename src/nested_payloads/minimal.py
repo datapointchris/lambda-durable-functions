@@ -26,8 +26,8 @@ class Status(StrEnum):
 
     `to_dict` therefore passes the field through rather than reading `.value`,
     which would raise on a `Manifest` built with a bare string. `from_dict` is
-    where it is normalised, and that call validates: an unknown value raises
-    `ValueError` instead of travelling on.
+    where it is normalized, and that call validates: an unknown value raises
+    `ValueError` instead of traveling on.
     """
 
     READY = 'ready'

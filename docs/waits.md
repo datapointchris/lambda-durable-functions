@@ -34,7 +34,7 @@ wait does not consume the invocation's 15-minute limit. See
 whole reason a five-minute settle window is expressible at all.
 
 !!! note "This claim is documented, not measured here"
-    No AWS account is attached to this workspace, so the billing behaviour is taken from the AWS
+    No AWS account is attached to this workspace, so the billing behavior is taken from the AWS
     documentation rather than from a bill. Everything else on this page was run locally.
 
 The practical consequence is that a wait should be as long as the real-world process it models. A
@@ -314,7 +314,7 @@ bug, and [Testing](testing.md) traces it through the in-memory step processor;
     check just observed. `is_quiet(newest_epoch, now_epoch, quiet_seconds)` above is the shape:
     every attempt reaches the same verdict from the same observation, with no memory.
 
-The rule generalises past both bugs. A poll whose decision comes from the world it just observed is
+The rule generalizes past both bugs. A poll whose decision comes from the world it just observed is
 easier to reason about than one carrying a tally, and it survives a lost checkpoint.
 
 ## A poll delay below one second is clamped up to one second
@@ -348,7 +348,7 @@ not hand-roll one. The fields, with their measured defaults:
 | `initial_delay` | `Duration.from_seconds(5)` | the delay before attempt 2 |
 | `max_delay` | `Duration.from_minutes(5)` | ceiling on the computed delay |
 | `backoff_rate` | `1.5` | multiplier per attempt |
-| `jitter_strategy` | `JitterStrategy.FULL` | how the delay is randomised |
+| `jitter_strategy` | `JitterStrategy.FULL` | how the delay is randomized |
 | `timeout` | `None` | declared and not implemented in 1.7.0 |
 
 The delay is computed as `min(initial_delay * backoff_rate ** (attempts_made - 1), max_delay)`,
@@ -559,7 +559,7 @@ than holding the change open for four hours.
     means no heartbeat deadline at all, and an unset `timeout` means nothing in the gate will ever
     end the wait. Set `timeout` on every callback, and treat `heartbeat_timeout` as opt-in.
 
-`tests/conftest_approval_gate.py` uses that behaviour deliberately, setting the heartbeat to zero so
+`tests/conftest_approval_gate.py` uses that behavior deliberately, setting the heartbeat to zero so
 only the tests that mean to exercise it turn it on:
 
 ```python

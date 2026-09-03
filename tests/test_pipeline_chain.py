@@ -89,7 +89,7 @@ def test_a_run_date_that_is_not_a_date_is_rejected():
         run_date_from_event({'runDate': None})
 
 
-def test_a_compact_run_date_is_normalised_before_any_key_is_built():
+def test_a_compact_run_date_is_normalized_before_any_key_is_built():
     assert run_date_from_event({'runDate': '20260818'}) == RUN_DATE
 
 

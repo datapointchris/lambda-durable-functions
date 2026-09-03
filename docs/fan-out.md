@@ -373,10 +373,10 @@ if batch_result.completion_reason is CompletionReason.FAILURE_TOLERANCE_EXCEEDED
 `BatchResult.throw_if_error()` is the shorthand when any failure at all should end the execution.
 It raises the first failed item's error, converted to a `CallableRuntimeError`.
 
-### A breach cancels outstanding work, and cancelled is not failed
+### A breach cancels outstanding work, and canceled is not failed
 
 When the tolerance is exceeded the executor cancels the futures that have not started and shuts the
-pool down without waiting. A cancelled branch is recorded as `BatchItemStatus.STARTED`, so
+pool down without waiting. A canceled branch is recorded as `BatchItemStatus.STARTED`, so
 `success_count + failure_count` can be less than `total_count`. The second row of the matrix above
 shows it: three successes were expected and only two arrived, with one item left `STARTED`. The
 same effect was measured in `src/batch_scoring/` at three failures against a tolerance of two out of
@@ -578,7 +578,7 @@ the `BatchResult`, and the default codec for that rejects a dataclass.
 def extract_summary(dataset: str, key: str, row_count: int) -> dict:
     """What a branch returns.
 
-    Plain JSON types only: a BatchResult item is serialised with the default
+    Plain JSON types only: a BatchResult item is serialized with the default
     codec, which rejects a dataclass.
     """
     return {'dataset': dataset, 'stagingKey': key, 'rowCount': row_count}
@@ -692,12 +692,12 @@ which emit the counts and the completion reason as JSON — and the operation is
 - `NestingType.FLAT` removed two of five operations from a two-item map, and took the branch names
   with them.
 - A `@durable_parallel_branch()` with no name is `parallel-branch-0`, contradicting its docstring.
-- The default completion behaviour is zero tolerance: one failure out of four breaches, and the
+- The default completion behavior is zero tolerance: one failure out of four breaches, and the
   batch still returns normally.
 - `tolerated_failure_percentage` compares strictly greater, so 50 tolerates one failure in four and
   10 does not.
 - `min_successful` stops the waiting rather than the work; a branch already running keeps running.
-- A breach cancels unstarted work, and cancelled items are recorded `STARTED`, not `FAILED`.
+- A breach cancels unstarted work, and canceled items are recorded `STARTED`, not `FAILED`.
 - `context.invoke` cannot be driven by testing 1.2.1 without supplying a CHAINED_INVOKE processor.
 
 None of this is verified against real Lambda. No AWS account exists for this workspace yet.

@@ -9,7 +9,7 @@ waiting, and an invocation lost mid-step simply runs it again.
 
 `charge_card` has no such property. AT_MOST_ONCE_PER_RETRY makes the SDK
 checkpoint the start synchronously, so an invocation lost mid-charge is
-recognised on replay and the body is not re-entered. The step raises
+recognized on replay and the body is not re-entered. The step raises
 StepInterruptedError into its retry strategy instead, which declines to retry
 it — see `should_retry_charge`.
 

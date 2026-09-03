@@ -374,7 +374,7 @@ of the two. `reserve_stock` above is keyed by order id, so a second reserve writ
 
 **Use at-most-once when repeating the side effect is worse than failing.** From
 `src/order_saga/handler.py`, the charge step, whose start is checkpointed synchronously so the next
-invocation can recognise an interrupted charge. `CHARGE_SEMANTICS` is a module constant holding
+invocation can recognize an interrupted charge. `CHARGE_SEMANTICS` is a module constant holding
 `StepSemantics.AT_MOST_ONCE_PER_RETRY`, so a test can flip it:
 
 ```python
@@ -396,7 +396,7 @@ def should_retry_charge(*, interrupted: bool, attempts_made: int, max_attempts: 
     """An interrupted charge may already have reached the processor, so it is never retried.
 
     The saga cannot tell a lost response from a lost request. Retrying resolves
-    that ambiguity in the customer's disfavour; failing the stage sends it to
+    that ambiguity in the customer's disfavor; failing the stage sends it to
     compensation, which asks the processor what actually happened.
     """
     if interrupted:

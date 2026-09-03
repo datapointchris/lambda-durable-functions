@@ -5,7 +5,7 @@ then download it through a short-lived signed URL. Three failures need three
 different answers, and choosing between them is what this example is for.
 
 A 429 or a 503 is a good request arriving at a bad moment, so the step retries it
-with backoff and honours `Retry-After` when the partner sent one. A 401 or a 422
+with backoff and honors `Retry-After` when the partner sent one. A 401 or a 422
 is the request itself being wrong, so it fails the execution on the first attempt
 rather than spending four more minutes reaching the same answer. An expired
 download URL is neither: that request can never succeed again, but minting a

@@ -462,7 +462,7 @@ expiring. `STOPPED` is a `StopDurableExecution` call.
 
 ### An execution name makes starting one idempotent
 
-`Invoke` takes an optional `DurableExecutionName`. The API model documents the behaviour exactly:
+`Invoke` takes an optional `DurableExecutionName`. The API model documents the behavior exactly:
 
 > A unique name for the durable execution. If you invoke a durable function using a name that
 > already exists with the same payload, Lambda returns the existing execution instead of creating a

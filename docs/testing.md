@@ -490,7 +490,7 @@ def get_step(self, name: str) -> StepOperation:
     off a bare `Operation` pulled out of `child_operations` is a type error, which is why
     `stage.get_step('charge_card').attempt` is the idiom rather than `stage.child_operations[0]`.
 
-Three more measured behaviours of this group:
+Three more measured behaviors of this group:
 
 - **The two levels raise different messages.** The result says
   `Operation with name 'score' not found`; a `ContextOperation` says
@@ -1378,7 +1378,7 @@ newest object's own timestamp and compares it with now, so an attempt needs no m
 before it. Comparing successive listings would have been the obvious implementation and would have
 depended on exactly the state the harness drops.
 
-The rule generalises past the bug: **compute a stop condition from what the check just observed,
+The rule generalizes past the bug: **compute a stop condition from what the check just observed,
 never from a running tally.** A poll written that way survives a lost checkpoint, and it is easier
 to reason about. More on the design in [waits.md](waits.md).
 
@@ -1565,7 +1565,7 @@ harness fixes it.
 - [`serdes.py`][serdes] — the codec behind every `.result` envelope on this page.
 - `aws_durable_execution_sdk_python_testing/runner.py`, in the installed testing package, holds the
   four runners, `DurableFunctionTestResult`, and every operation class in the table above. It is
-  the fastest way to check an accessor's behaviour, because every one of them is a line long.
+  the fastest way to check an accessor's behavior, because every one of them is a line long.
 
 [lambda-service]: https://github.com/aws/aws-durable-execution-sdk-python/blob/main/packages/aws-durable-execution-sdk-python/src/aws_durable_execution_sdk_python/lambda_service.py
 [wait-for-condition]: https://github.com/aws/aws-durable-execution-sdk-python/blob/main/packages/aws-durable-execution-sdk-python/src/aws_durable_execution_sdk_python/operation/wait_for_condition.py
