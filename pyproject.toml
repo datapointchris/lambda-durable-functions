@@ -72,6 +72,15 @@ warn_return_any = false
 
 [tool.codespell]
 check-filenames = true
+# `CANCELLED` is the installed SDK's own enum member and its wire value, in
+# `lambda_service.py` — six occurrences, and the American spelling appears
+# nowhere in the package. The docs quote the name, so the en-GB dictionary
+# reads a third-party identifier as prose.
+#
+# Uppercase only, so the lower-case and capitalized forms still gate. Neither
+# is written out here: an example would trip this hook on this very file, the
+# same trap the codespell block in .pre-commit-config.yaml notes.
+ignore-regex = '\bCANCELLED\b'
 
 [tool.forge]
 # Keys the shared toolchain standard owns, written by its generator.
