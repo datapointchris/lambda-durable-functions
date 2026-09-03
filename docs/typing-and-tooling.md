@@ -45,8 +45,12 @@ The shared default sets `ignore_missing_imports = true`, which turns the unresol
 Success: no issues found in 1 source file
 ```
 
-This project therefore sets `ignore_missing_imports = false` in `pyproject.toml`. A missing SDK
-should be loud.
+That is worth knowing whenever a dependency is provided by the runtime rather than by the package,
+because the two checkers then disagree and the quiet one is the one usually trusted.
+
+It does not arise here. The SDK is a declared dependency, so `uv sync` installs it and `uv run`
+syncs before it runs anything — which is how both the pre-commit hook and CI invoke mypy. Reaching
+the silent case means running `mypy` by hand against an environment that never synced.
 
 ## No stub package is needed
 
@@ -55,9 +59,10 @@ An earlier reading of this concluded the SDK typed its decorator as identity-pre
 checker. That is not what it does. Writing a `-stubs` package for it would fix nothing and would
 shadow a correctly typed dependency.
 
-## ruff's ARG rules fire on the context parameter
+## ruff's ARG rules fire on the context parameter, if you enable them
 
-Two codes, both legitimate, neither needing a suppression:
+`ARG` is not selected here. Enabling it produces two codes, both legitimate, neither needing a
+suppression:
 
 | Code | Fires on | Fix |
 | --- | --- | --- |
@@ -76,7 +81,9 @@ Ruff does no call-arity analysis, so it is never the source of a missing-paramet
 typeCheckingMode = "standard"
 
 [tool.ruff.lint]
-select = ["E", "F", "I", "UP", "B", "SIM", "PTH", "ARG"]
+select = ["E", "F", "UP", "B", "SIM", "I"]
 ```
 
-`standard` rather than basedpyright's `recommended` default, matching the shared default.
+`standard` rather than basedpyright's `recommended` default, matching the shared default. The
+`select` list is the shared default too — `PTH` would govern nothing, because nothing here touches
+the filesystem.

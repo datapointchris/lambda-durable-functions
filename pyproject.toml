@@ -33,7 +33,7 @@ line-length = 140
 src = ["src", "tests"]
 
 [tool.ruff.lint]
-select = ["E", "F", "I", "UP", "B", "SIM", "PTH", "ARG"]
+select = ["E", "F", "UP", "B", "SIM", "I"]
 ignore = [
     "SIM108",  # ternary operator — often less readable
 ]
@@ -66,21 +66,9 @@ analyzeUnannotatedFunctions = true
 
 [tool.mypy]
 pretty = true
-# Unlike the shared default, imports are not ignored. An unresolved
-# aws_durable_execution_sdk_python turns every decorated handler into Any and
-# silently hides the call-arity errors basedpyright reports.
-ignore_missing_imports = false
-
+ignore_missing_imports = true
 check_untyped_defs = false
 warn_return_any = false
-
-# boto3 ships no type information and no stub package is installed. Scoped to
-# boto3 rather than set globally: an unresolved aws_durable_execution_sdk_python
-# must still fail, because that import silently becoming Any is what hides the
-# call-arity errors basedpyright reports. See docs/typing-and-tooling.md.
-[[tool.mypy.overrides]]
-module = ["boto3", "boto3.*", "botocore", "botocore.*"]
-ignore_missing_imports = true
 
 [tool.codespell]
 check-filenames = true

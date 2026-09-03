@@ -7,10 +7,9 @@ a callback from a test, and the harness limits that shape every test in this rep
 
 It is for someone who already has a handler and wants it under test without changing its shape.
 
-Every fact here was measured on **2026-08-19** against `aws-durable-execution-sdk-python` **1.7.0**
-and `aws-durable-execution-sdk-python-testing` **1.2.1**. Every snippet is quoted from a test in
-this repository that runs. The whole suite is **147 passed, 1 xfailed in 128.95s**, measured the
-same day.
+Every fact here was measured against `aws-durable-execution-sdk-python` **1.7.0** and
+`aws-durable-execution-sdk-python-testing` **1.2.1**. Every snippet is quoted from a test in this
+repository that runs, and the whole suite takes a little over two minutes.
 
 Background reading, none of it repeated here and all of it listed on the [index](index.md):
 [concepts.md](concepts.md) for what replay is,
@@ -1547,9 +1546,9 @@ testpaths = ["tests"]
 pythonpath = ["src", "tests"]
 ```
 
-Measured 2026-08-19: **147 passed, 1 xfailed in 128.95s**. Almost all of that is real waiting —
-modeled durations, retry backoffs, and the runner's own poll interval. The xfail is the
-`wait_for_condition` state limit above, and it is `strict`, so it turns into a failure the day the
+The suite takes a little over two minutes, and almost all of that is real waiting — modeled
+durations, retry backoffs, and the runner's own poll interval. There is one xfail: the
+`wait_for_condition` state limit above. It is `strict`, so it turns into a failure the day the
 harness fixes it.
 
 ## Further reading

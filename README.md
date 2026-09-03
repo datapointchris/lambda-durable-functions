@@ -37,7 +37,7 @@ testable; tests reach every seam with `monkeypatch.setattr`.
 
 ```bash
 uv venv && uv pip install -e '.[dev]'
-.venv/bin/python -m pytest -q         # 147 passed, 1 xfailed
+.venv/bin/python -m pytest -q
 .venv/bin/python -m ruff check .
 .venv/bin/python -m basedpyright
 ```
