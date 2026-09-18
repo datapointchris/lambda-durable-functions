@@ -1,6 +1,4 @@
-# CLAUDE.md
-
-Guidance for Claude Code working in this repository.
+# lambda-durable-functions
 
 Read the README first, and `docs/concepts.md` before touching any handler. The README's "Findings
 worth knowing before writing any of this" list is the shortest path to not repeating an expensive
