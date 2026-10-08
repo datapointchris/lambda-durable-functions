@@ -16,7 +16,9 @@ dev = [
     "cattrs>=24",
     "aws-durable-execution-sdk-python-testing>=1.2.1",
     "pytest>=8.0",
-    "ruff",
+    # The version pre-commit and CI run. A newer ruff formats Markdown code
+    # blocks, and the docs quote SDK source verbatim in some of them.
+    "ruff==0.12.5",
     "basedpyright",
     "mypy",
 ]
@@ -33,7 +35,15 @@ line-length = 140
 src = ["src", "tests"]
 
 [tool.ruff.lint]
-select = ["E", "F", "UP", "B", "SIM", "I"]
+select = [
+    "E",    # pycodestyle errors
+    "F",    # pyflakes
+    "UP",   # pyupgrade
+    "B",    # flake8-bugbear
+    "SIM",  # flake8-simplify
+    "I",    # isort
+    "ICN",  # flake8-import-conventions
+]
 ignore = [
     "SIM108",  # ternary operator — often less readable
 ]
@@ -43,6 +53,16 @@ force-single-line = true
 
 [tool.ruff.lint.per-file-ignores]
 "__init__.py" = ["F401"]
+
+[tool.ruff.lint.flake8-import-conventions]
+banned-from = ["datetime", "pyspark.sql.functions", "pyspark.sql.types"]
+
+[tool.ruff.lint.flake8-import-conventions.extend-aliases]
+datetime = "dt"
+sqlalchemy = "sa"
+"pyspark.sql.functions" = "sf"
+"pyspark.sql.types" = "st"
+
 [tool.ruff.format]
 quote-style = "single"
 indent-style = "space"
@@ -92,6 +112,11 @@ managed = [
     ["ruff", "lint", "select"],
     ["ruff", "lint", "ignore"],
     ["ruff", "lint", "isort", "force-single-line"],
+    ["ruff", "lint", "flake8-import-conventions", "banned-from"],
+    ["ruff", "lint", "flake8-import-conventions", "extend-aliases", "datetime"],
+    ["ruff", "lint", "flake8-import-conventions", "extend-aliases", "sqlalchemy"],
+    ["ruff", "lint", "flake8-import-conventions", "extend-aliases", "pyspark.sql.functions"],
+    ["ruff", "lint", "flake8-import-conventions", "extend-aliases", "pyspark.sql.types"],
     ["ruff", "lint", "per-file-ignores", "__init__.py"],
     ["mypy", "pretty"],
     ["mypy", "ignore_missing_imports"],
