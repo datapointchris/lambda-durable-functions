@@ -251,7 +251,7 @@ def test_the_manifest_is_written_once_despite_replay(minimal_handler):
 # --- convert once, then close over it ---
 
 
-def test_later_steps_use_the_dataclass_without_converting_again(minimal_handler):
+def test_later_steps_use_the_dataclass_without_converting_again(minimal_handler, monkeypatch):
     """The conversion belongs at a step's return boundary, nowhere else.
 
     A step that merely uses the manifest closes over it from the handler scope.
@@ -267,33 +267,30 @@ def test_later_steps_use_the_dataclass_without_converting_again(minimal_handler)
         conversions.append(1)
         return original(cls, payload)
 
-    Manifest.from_dict = classmethod(counting)
-    try:
+    monkeypatch.setattr(Manifest, 'from_dict', classmethod(counting))
 
-        @durable_execution
-        def lambda_handler(_event: dict, context: DurableContext) -> dict:
-            def load(step_context: StepContext) -> dict:
-                step_context.logger.info('loaded')
-                return NESTED.to_dict()
+    @durable_execution
+    def lambda_handler(_event: dict, context: DurableContext) -> dict:
+        def load(step_context: StepContext) -> dict:
+            step_context.logger.info('loaded')
+            return NESTED.to_dict()
 
-            manifest = Manifest.from_dict(context.step(load, name='load'))
+        manifest = Manifest.from_dict(context.step(load, name='load'))
 
-            def validate(_step_context: StepContext) -> int:
-                effects.append('validate')
-                return sum(f.size for f in manifest.files)
+        def validate(_step_context: StepContext) -> int:
+            effects.append('validate')
+            return sum(f.size for f in manifest.files)
 
-            total = context.step(validate, name='validate')
+        total = context.step(validate, name='validate')
 
-            def notify(_step_context: StepContext) -> str:
-                effects.append('notify')
-                return f'{manifest.status}:{len(manifest.files)}'
+        def notify(_step_context: StepContext) -> str:
+            effects.append('notify')
+            return f'{manifest.status}:{len(manifest.files)}'
 
-            return {'total': total, 'tag': context.step(notify, name='notify')}
+        return {'total': total, 'tag': context.step(notify, name='notify')}
 
-        with DurableFunctionTestRunner(lambda_handler) as runner:
-            result = runner.run(input='{}', timeout=30)
-    finally:
-        Manifest.from_dict = classmethod(original)
+    with DurableFunctionTestRunner(lambda_handler) as runner:
+        result = runner.run(input='{}', timeout=30)
 
     assert result.result is not None
     payload = json.loads(result.result)
