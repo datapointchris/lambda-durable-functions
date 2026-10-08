@@ -132,3 +132,6 @@ managed = [
     ["pytest", "ini_options", "minversion"],
     ["pytest", "ini_options", "testpaths"],
 ]
+# Dependencies held at the version the pre-commit hook runs, in every group
+# and extra that names them, so a local run and CI cannot disagree.
+pinned = ["ruff"]
