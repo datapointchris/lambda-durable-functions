@@ -1,8 +1,7 @@
 """The small approach, proved against the same nested shape."""
 
+import datetime as dt
 import json
-from datetime import UTC
-from datetime import datetime
 
 import pytest
 from aws_durable_execution_sdk_python import DurableContext
@@ -24,8 +23,8 @@ NESTED = Manifest(
     status=Status.READY,
     bucket='test-lake',
     files=[
-        TrackedFile('incoming/a.csv', 120, datetime(2026, 8, 19, 9, 0, tzinfo=UTC)),
-        TrackedFile('incoming/b.csv', 80, datetime(2026, 8, 19, 9, 5, tzinfo=UTC)),
+        TrackedFile('incoming/a.csv', 120, dt.datetime(2026, 8, 19, 9, 0, tzinfo=dt.UTC)),
+        TrackedFile('incoming/b.csv', 80, dt.datetime(2026, 8, 19, 9, 5, tzinfo=dt.UTC)),
     ],
 )
 
@@ -50,11 +49,11 @@ def test_a_nested_dict_needs_no_custom_serdes_at_all():
 def test_the_default_codec_even_keeps_a_raw_datetime_inside_a_dict():
     """So to_dict may skip isoformat if the payload never reaches S3."""
     codec, ctx = ExtendedTypeSerDes(), SerDesContext()
-    payload = {'files': [{'key': 'a.csv', 'modified': datetime(2026, 8, 19, 9, 0, tzinfo=UTC)}]}
+    payload = {'files': [{'key': 'a.csv', 'modified': dt.datetime(2026, 8, 19, 9, 0, tzinfo=dt.UTC)}]}
 
     restored = codec.deserialize(codec.serialize(payload, ctx), ctx)
 
-    assert isinstance(restored['files'][0]['modified'], datetime)
+    assert isinstance(restored['files'][0]['modified'], dt.datetime)
 
 
 def test_s3_round_trip_uses_the_same_two_methods():
@@ -82,7 +81,7 @@ def fake_s3():
 
 def test_a_handler_using_only_dicts_needs_no_step_config(fake_s3):
     """No StepConfig, no serdes argument, no SerDes subclass anywhere."""
-    discovered = [TrackedFile('incoming/a.csv', 120, datetime(2026, 8, 19, 9, 0, tzinfo=UTC))]
+    discovered = [TrackedFile('incoming/a.csv', 120, dt.datetime(2026, 8, 19, 9, 0, tzinfo=dt.UTC))]
 
     @durable_execution
     def lambda_handler(_event: dict, context: DurableContext) -> dict:
@@ -184,8 +183,6 @@ def test_an_unknown_status_is_rejected_on_rebuild():
 @pytest.fixture
 def minimal_handler(monkeypatch):
     """Swap the module-scope client, exactly as the other examples do."""
-    import datetime as dt
-
     from nested_payloads import minimal_handler as handler_module
 
     fake = FakeS3(

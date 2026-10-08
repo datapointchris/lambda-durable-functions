@@ -1,7 +1,7 @@
 """The default codec's type set, and what the custom SerDes adds."""
 
+import datetime as dt
 from dataclasses import dataclass
-from datetime import datetime
 
 import pytest
 from aws_durable_execution_sdk_python.exceptions import SerDesError
@@ -14,7 +14,7 @@ from landing_zone.serdes import DataclassSerDes
 
 @dataclass
 class Stamped:
-    at: datetime
+    at: dt.datetime
     label: str
 
 
@@ -42,13 +42,13 @@ def test_the_tuple_field_survives_as_a_tuple(ctx):
 
 def test_a_datetime_field_is_preserved_rather_than_stringified(ctx):
     serdes = DataclassSerDes(Stamped)
-    original = Stamped(at=datetime(2026, 1, 1, 12, 30), label='x')
-    assert isinstance(serdes.deserialize(serdes.serialize(original, ctx), ctx).at, datetime)
+    original = Stamped(at=dt.datetime(2026, 1, 1, 12, 30), label='x')
+    assert isinstance(serdes.deserialize(serdes.serialize(original, ctx), ctx).at, dt.datetime)
 
 
 @pytest.mark.parametrize(
     'value',
-    [None, 'x', 1, 1.5, True, b'bytes', (1, 2), [1, 2], {'k': 'v'}, datetime(2026, 1, 1)],
+    [None, 'x', 1, 1.5, True, b'bytes', (1, 2), [1, 2], {'k': 'v'}, dt.datetime(2026, 1, 1)],
 )
 def test_the_default_codec_carries_its_documented_types(value, ctx):
     codec = ExtendedTypeSerDes()

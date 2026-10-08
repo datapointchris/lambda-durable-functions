@@ -1,9 +1,8 @@
 """Round-tripping a nested dataclass through a checkpoint and through S3."""
 
+import datetime as dt
 import json
 from dataclasses import asdict
-from datetime import UTC
-from datetime import datetime
 
 import pytest
 from aws_durable_execution_sdk_python.exceptions import SerDesError
@@ -26,8 +25,8 @@ NESTED = Manifest(
     status='ready',
     bucket='test-lake',
     files=[
-        TrackedFile('incoming/a.csv', 120, datetime(2026, 8, 19, 9, 0, tzinfo=UTC)),
-        TrackedFile('incoming/b.csv', 80, datetime(2026, 8, 19, 9, 5, tzinfo=UTC)),
+        TrackedFile('incoming/a.csv', 120, dt.datetime(2026, 8, 19, 9, 0, tzinfo=dt.UTC)),
+        TrackedFile('incoming/b.csv', 80, dt.datetime(2026, 8, 19, 9, 5, tzinfo=dt.UTC)),
     ],
 )
 
@@ -71,7 +70,7 @@ def test_the_recursive_serdes_restores_the_whole_tree(ctx):
 
     assert restored == NESTED
     assert isinstance(restored.files[0], TrackedFile)
-    assert isinstance(restored.files[0].modified, datetime)
+    assert isinstance(restored.files[0].modified, dt.datetime)
 
 
 def test_an_optional_field_survives_as_none(ctx):
@@ -127,7 +126,7 @@ class VersionedManifest(Manifest):
         return cls(
             status=payload['state'],
             bucket='test-lake',
-            files=[TrackedFile(f['key'], f['size'], datetime.fromisoformat(f['modified'])) for f in payload['files']],
+            files=[TrackedFile(f['key'], f['size'], dt.datetime.fromisoformat(f['modified'])) for f in payload['files']],
         )
 
 
@@ -226,7 +225,7 @@ def test_the_cattrs_serdes_round_trips_the_nested_type(ctx):
 
     assert restored == NESTED
     assert isinstance(restored.files[0], TrackedFile)
-    assert isinstance(restored.files[0].modified, datetime)
+    assert isinstance(restored.files[0].modified, dt.datetime)
 
 
 def test_cattrs_produces_the_same_wire_form_as_the_recursive_codec(ctx):

@@ -9,9 +9,9 @@ step returning a nested dict checkpoints natively. The dataclass is rebuilt at
 the call site.
 """
 
+import datetime as dt
 import json
 from dataclasses import dataclass
-from datetime import datetime
 from enum import StrEnum
 
 
@@ -39,7 +39,7 @@ class Status(StrEnum):
 class TrackedFile:
     key: str
     size: int
-    modified: datetime
+    modified: dt.datetime
     status: Status = Status.READY
 
     def to_dict(self) -> dict:
@@ -55,7 +55,7 @@ class TrackedFile:
         return cls(
             payload['key'],
             payload['size'],
-            datetime.fromisoformat(payload['modified']),
+            dt.datetime.fromisoformat(payload['modified']),
             Status(payload['status']),
         )
 

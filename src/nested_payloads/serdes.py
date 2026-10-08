@@ -5,9 +5,9 @@ them, so a step returning one raises `SerDesError: Unsupported type` after the
 body has already run. These are the options, in the order worth trying them.
 """
 
+import datetime as dt
 import json
 from dataclasses import asdict
-from datetime import datetime
 from typing import Any
 from typing import Protocol
 from typing import runtime_checkable
@@ -127,8 +127,8 @@ def cattrs_serdes(cls: type) -> SerDes:
     import cattrs
 
     converter = cattrs.Converter()
-    converter.register_unstructure_hook(datetime, lambda value: value.isoformat())
-    converter.register_structure_hook(datetime, lambda value, _type: datetime.fromisoformat(value))
+    converter.register_unstructure_hook(dt.datetime, lambda value: value.isoformat())
+    converter.register_structure_hook(dt.datetime, lambda value, _type: dt.datetime.fromisoformat(value))
 
     class _CattrsSerDes(JsonSerDes):
         def _to_payload(self, value: Any) -> Any:

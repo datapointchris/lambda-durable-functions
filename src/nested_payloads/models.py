@@ -5,15 +5,15 @@ the SDK's default codec cannot carry and a top-level-only reconstruction gets
 wrong: the manifest comes back as a `Manifest` whose `files` are plain dicts.
 """
 
+import datetime as dt
 from dataclasses import dataclass
-from datetime import datetime
 
 
 @dataclass(frozen=True)
 class TrackedFile:
     key: str
     size: int
-    modified: datetime
+    modified: dt.datetime
 
 
 @dataclass(frozen=True)

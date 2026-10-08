@@ -10,10 +10,9 @@ rebuilds the dataclass from the field type hints, recursing through lists,
 dicts, tuples, optionals and nested dataclasses.
 """
 
+import datetime as dt
 from dataclasses import fields
 from dataclasses import is_dataclass
-from datetime import date
-from datetime import datetime
 from decimal import Decimal
 from types import UnionType
 from typing import Any
@@ -32,7 +31,7 @@ def unstructure(value: Any) -> Any:
         return [unstructure(v) for v in value]
     if isinstance(value, dict):
         return {k: unstructure(v) for k, v in value.items()}
-    if isinstance(value, datetime | date):
+    if isinstance(value, dt.datetime | dt.date):
         return value.isoformat()
     if isinstance(value, UUID | Decimal):
         return str(value)
@@ -67,10 +66,10 @@ def structure(value: Any, target: Any) -> Any:
         key_type, value_type = get_args(target)
         return {structure(k, key_type): structure(v, value_type) for k, v in value.items()}
 
-    if target is datetime and isinstance(value, str):
-        return datetime.fromisoformat(value)
-    if target is date and isinstance(value, str):
-        return date.fromisoformat(value)
+    if target is dt.datetime and isinstance(value, str):
+        return dt.datetime.fromisoformat(value)
+    if target is dt.date and isinstance(value, str):
+        return dt.date.fromisoformat(value)
     if target is UUID and isinstance(value, str):
         return UUID(value)
     if target is Decimal and isinstance(value, str):
