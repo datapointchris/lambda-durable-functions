@@ -1,4 +1,4 @@
-# forge-toolchain: 28
+# forge-toolchain: 30
 name: CI
 
 on:
@@ -25,7 +25,7 @@ jobs:
 
       # Before the sync, which would rewrite a stale lock rather than fail on
       # it. uvx, so the uv is the one the uv-lock hook pins.
-      - run: uvx uv@0.8.3 lock --check
+      - run: uvx uv@0.12.24 lock --check
 
       - run: uv sync --all-extras --dev
 

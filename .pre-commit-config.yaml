@@ -1,4 +1,4 @@
-# forge-toolchain: 28
+# forge-toolchain: 30
 fail_fast: true
 default_stages: [pre-commit]
 repos:
@@ -187,7 +187,7 @@ repos:
 
 # generated:python-format - Python: dependency lock
   - repo: https://github.com/astral-sh/uv-pre-commit
-    rev: 0.8.3
+    rev: 0.12.24
     hooks:
       - id: uv-lock
 
