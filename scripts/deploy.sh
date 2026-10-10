@@ -11,7 +11,7 @@ ALIAS_NAME="${ALIAS_NAME:-live}"
 ARTIFACT="${ARTIFACT:-function.zip}"
 
 usage() {
-    cat <<'EOF'
+  cat <<'EOF'
 Usage: deploy.sh <draft|release>
 
   draft    update $LATEST only. Invoke $LATEST directly to iterate; the
@@ -28,34 +28,34 @@ EOF
 }
 
 require_artifact() {
-    [[ -f "$ARTIFACT" ]] || {
-        echo "artifact not found: $ARTIFACT" >&2
-        exit 1
-    }
+  [[ -f "$ARTIFACT" ]] || {
+    echo "artifact not found: $ARTIFACT" >&2
+    exit 1
+  }
 }
 
 case "${1:-}" in
-draft)
+  draft)
     require_artifact
     aws lambda update-function-code \
-        --function-name "$FUNCTION_NAME" \
-        --zip-file "fileb://$ARTIFACT" \
-        --query 'LastModified' --output text
+      --function-name "$FUNCTION_NAME" \
+      --zip-file "fileb://$ARTIFACT" \
+      --query 'LastModified' --output text
     ;;
-release)
+  release)
     require_artifact
     version="$(aws lambda update-function-code \
-        --function-name "$FUNCTION_NAME" \
-        --zip-file "fileb://$ARTIFACT" \
-        --publish --query Version --output text)"
+      --function-name "$FUNCTION_NAME" \
+      --zip-file "fileb://$ARTIFACT" \
+      --publish --query Version --output text)"
     aws lambda update-alias \
-        --function-name "$FUNCTION_NAME" \
-        --name "$ALIAS_NAME" \
-        --function-version "$version" \
-        --query 'AliasArn' --output text
+      --function-name "$FUNCTION_NAME" \
+      --name "$ALIAS_NAME" \
+      --function-version "$version" \
+      --query 'AliasArn' --output text
     echo "$ALIAS_NAME -> version $version"
     ;;
-*)
+  *)
     usage
     exit 1
     ;;
