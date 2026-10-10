@@ -1,4 +1,4 @@
-# forge-toolchain: 38
+# forge-toolchain: 40
 fail_fast: true
 default_stages: [pre-commit]
 repos:
@@ -205,11 +205,26 @@ repos:
         args: [--fix]
 
   # Python: type checking (uses uv for full dependency visibility)
+  #
+  # --all-extras, because some repos keep mypy itself in a `dev` extra, and a
+  # plain `uv run` installs no extras. It also gives mypy the types an extra
+  # brings.
+  #
+  # mypy runs only where the project declares it. Without the guard, `uv run`
+  # falls back to whatever mypy is on PATH: a workstation's passes the commit,
+  # and a runner has none. The probe exits 3 for an absent mypy, a status
+  # neither uv nor python uses, so a sync that fails still fails the hook.
   - repo: local
     hooks:
       - id: mypy
         name: mypy
-        entry: uv run mypy . --install-types --non-interactive
+        entry: >-
+          bash -c 'uv run --all-extras python -c "import importlib.util as u, sys; sys.exit(0 if u.find_spec(sys.argv[1]) else 3)" mypy;
+          status=$?; case $status in
+          0) exec uv run --all-extras mypy . --install-types --non-interactive ;;
+          3) echo "mypy is not a project dependency, so nothing is type-checked" ;;
+          *) exit $status ;;
+          esac'
         language: system
         types: [python]
         pass_filenames: false
