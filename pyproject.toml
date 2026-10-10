@@ -43,6 +43,15 @@ select = [
     "SIM",  # flake8-simplify
     "I",    # isort
     "ICN",  # flake8-import-conventions
+    # flake8-bandit by rule, never as the family. Most of what the family
+    # reports is a subprocess call made on purpose, and silencing that takes an
+    # ignore list that grows with every project.
+    "S102",  # exec
+    "S113",  # an HTTP request with no timeout, which can hang forever
+    "S301",  # pickle, which runs code from the bytes it loads
+    "S307",  # eval
+    "S324",  # md5 or sha1 used for security
+    "S501",  # TLS certificate verification turned off
 ]
 ignore = [
     "SIM108",  # ternary operator — often less readable
