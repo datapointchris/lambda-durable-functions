@@ -71,6 +71,7 @@ datetime = "dt"
 sqlalchemy = "sa"
 "pyspark.sql.functions" = "sf"
 "pyspark.sql.types" = "st"
+dataclasses = "dc"
 
 [tool.ruff.format]
 quote-style = "single"
@@ -123,6 +124,7 @@ managed = [
     ["ruff", "lint", "isort", "force-single-line"],
     ["ruff", "lint", "flake8-import-conventions", "banned-from"],
     ["ruff", "lint", "flake8-import-conventions", "extend-aliases", "datetime"],
+    ["ruff", "lint", "flake8-import-conventions", "extend-aliases", "dataclasses"],
     ["ruff", "lint", "flake8-import-conventions", "extend-aliases", "sqlalchemy"],
     ["ruff", "lint", "flake8-import-conventions", "extend-aliases", "pyspark.sql.functions"],
     ["ruff", "lint", "flake8-import-conventions", "extend-aliases", "pyspark.sql.types"],
