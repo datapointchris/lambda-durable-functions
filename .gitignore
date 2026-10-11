@@ -6,7 +6,6 @@ __pycache__/
 .mypy_cache/
 function.zip
 site/
-.planning
 .coverage
 coverage.xml
 dist/
