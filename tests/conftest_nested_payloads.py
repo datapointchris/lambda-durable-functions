@@ -51,13 +51,13 @@ class FakeS3:
 
     def get_object(self, **kwargs) -> dict:
         self.get_calls += 1
-        return {'Body': _Body(self.objects[kwargs['Key']])}
+        return {'Body': Body(self.objects[kwargs['Key']])}
 
     def stored_json(self, key: str) -> dict:
         return json.loads(self.objects[key])
 
 
-class _Body:
+class Body:
     def __init__(self, payload: bytes) -> None:
         self._payload = payload
 
