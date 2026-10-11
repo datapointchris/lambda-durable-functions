@@ -293,6 +293,9 @@ converter.register_structure_hook(datetime, lambda value, _type: datetime.fromis
 With the hooks registered, cattrs emits the same wire form as the recursive codec, which the repo
 asserts, so the store reads either.
 
+`cattrs_serdes.for_class` is that converter as a checkpoint codec. It is the one module that
+imports the `cattrs` extra, so the rest of the package installs without it.
+
 ### Keeping dataclasses off the boundary
 
 The fourth option is to not cross it. Steps return and accept plain dicts; the dataclass exists only

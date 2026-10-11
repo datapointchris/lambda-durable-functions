@@ -10,8 +10,10 @@ from aws_durable_execution_sdk_python.serdes import ExtendedTypeSerDes
 from aws_durable_execution_sdk_python.serdes import SerDesContext
 from aws_durable_execution_sdk_python_testing import DurableFunctionTestRunner
 
+from conftest_nested_payloads import NESTED
 from conftest_nested_payloads import install_fakes
 from conftest_nested_payloads import s3_page
+from nested_payloads import handler as handler_module
 from nested_payloads.codec import structure
 from nested_payloads.codec import unstructure
 from nested_payloads.models import Manifest
@@ -20,15 +22,6 @@ from nested_payloads.serdes import ExplicitSerDes
 from nested_payloads.serdes import FlatDataclassSerDes
 from nested_payloads.serdes import NestedDataclassSerDes
 from nested_payloads.store import ManifestStore
-
-NESTED = Manifest(
-    status='ready',
-    bucket='test-lake',
-    files=[
-        TrackedFile('incoming/a.csv', 120, dt.datetime(2026, 8, 19, 9, 0, tzinfo=dt.UTC)),
-        TrackedFile('incoming/b.csv', 80, dt.datetime(2026, 8, 19, 9, 5, tzinfo=dt.UTC)),
-    ],
-)
 
 
 @pytest.fixture
@@ -176,8 +169,6 @@ def test_stored_bytes_and_checkpoint_bytes_agree(fakes, ctx):
 
 
 def test_the_handler_checkpoints_and_persists_the_same_manifest(fakes):
-    from nested_payloads import handler as handler_module
-
     with DurableFunctionTestRunner(handler_module.lambda_handler) as runner:
         result = runner.run(input=json.dumps({}), timeout=30)
 
@@ -191,8 +182,6 @@ def test_the_handler_checkpoints_and_persists_the_same_manifest(fakes):
 
 
 def test_a_previous_manifest_is_loaded_and_merged(fakes):
-    from nested_payloads import handler as handler_module
-
     previous_key = ManifestStore(fakes, 'test-lake').save('run-0', NESTED)
 
     with DurableFunctionTestRunner(handler_module.lambda_handler) as runner:
@@ -204,32 +193,7 @@ def test_a_previous_manifest_is_loaded_and_merged(fakes):
 
 
 def test_the_manifest_is_written_once_despite_replay(fakes):
-    from nested_payloads import handler as handler_module
-
     with DurableFunctionTestRunner(handler_module.lambda_handler) as runner:
         runner.run(input=json.dumps({}), timeout=30)
 
     assert fakes.put_calls == 1
-
-
-# --- cattrs, when the shapes outgrow the recursive codec ---
-
-cattrs = pytest.importorskip('cattrs', reason='cattrs is an optional extra')
-
-
-def test_the_cattrs_serdes_round_trips_the_nested_type(ctx):
-    from nested_payloads.serdes import cattrs_serdes
-
-    serdes = cattrs_serdes(Manifest)
-    restored = serdes.deserialize(serdes.serialize(NESTED, ctx), ctx)
-
-    assert restored == NESTED
-    assert isinstance(restored.files[0], TrackedFile)
-    assert isinstance(restored.files[0].modified, dt.datetime)
-
-
-def test_cattrs_produces_the_same_wire_form_as_the_recursive_codec(ctx):
-    """Both emit plain JSON, so the store can read either."""
-    from nested_payloads.serdes import cattrs_serdes
-
-    assert json.loads(cattrs_serdes(Manifest).serialize(NESTED, ctx)) == json.loads(NestedDataclassSerDes(Manifest).serialize(NESTED, ctx))

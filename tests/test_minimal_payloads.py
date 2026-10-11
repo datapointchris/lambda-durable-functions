@@ -2,6 +2,7 @@
 
 import datetime as dt
 import json
+from enum import Enum
 
 import pytest
 from aws_durable_execution_sdk_python import DurableContext
@@ -13,6 +14,7 @@ from aws_durable_execution_sdk_python.types import StepContext
 from aws_durable_execution_sdk_python_testing import DurableFunctionTestRunner
 
 from conftest_nested_payloads import FakeS3
+from nested_payloads import minimal_handler as handler_module
 from nested_payloads.minimal import Manifest
 from nested_payloads.minimal import Status
 from nested_payloads.minimal import TrackedFile
@@ -153,7 +155,6 @@ def test_a_downgraded_strenum_loses_isinstance_and_name():
 
 def test_a_plain_enum_is_a_hard_failure_not_a_downgrade():
     """Unlike StrEnum, an Enum that is not str- or int-backed raises."""
-    from enum import Enum
 
     class Mode(Enum):
         FULL = 'full'
@@ -183,7 +184,6 @@ def test_an_unknown_status_is_rejected_on_rebuild():
 @pytest.fixture
 def minimal_handler(monkeypatch):
     """Swap the module-scope client, exactly as the other examples do."""
-    from nested_payloads import minimal_handler as handler_module
 
     fake = FakeS3(
         [

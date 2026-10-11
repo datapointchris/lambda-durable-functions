@@ -10,7 +10,21 @@ os.environ.setdefault('LANDING_BUCKET', 'test-lake')
 os.environ.setdefault('MANIFEST_PREFIX', 'manifests/')
 os.environ.setdefault('SOURCE_PREFIX', 'incoming/')
 
+from nested_payloads import handler as handler_module
+from nested_payloads.models import Manifest
+from nested_payloads.models import TrackedFile
+from nested_payloads.store import ManifestStore
+
 EPOCH = dt.datetime(2026, 8, 19, 12, 0, tzinfo=dt.UTC)
+
+NESTED = Manifest(
+    status='ready',
+    bucket='test-lake',
+    files=[
+        TrackedFile('incoming/a.csv', 120, dt.datetime(2026, 8, 19, 9, 0, tzinfo=dt.UTC)),
+        TrackedFile('incoming/b.csv', 80, dt.datetime(2026, 8, 19, 9, 5, tzinfo=dt.UTC)),
+    ],
+)
 
 
 class FakeS3:
@@ -59,9 +73,6 @@ def s3_page(entries: dict[str, tuple[int, int]]) -> dict:
 
 
 def install_fakes(monkeypatch, pages: list[dict] | None = None) -> FakeS3:
-    from nested_payloads import handler as handler_module
-    from nested_payloads.store import ManifestStore
-
     fake = FakeS3(pages)
     monkeypatch.setattr(handler_module, 's3_client', fake)
     monkeypatch.setattr(

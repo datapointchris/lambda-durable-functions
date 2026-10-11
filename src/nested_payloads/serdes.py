@@ -1,11 +1,12 @@
-"""Four ways to checkpoint a nested dataclass, and what each costs.
+"""Ways to checkpoint a nested dataclass, and what each costs.
 
 The SDK's default codec carries a closed set of types. A dataclass is not among
 them, so a step returning one raises `SerDesError: Unsupported type` after the
 body has already run. These are the options, in the order worth trying them.
+The `cattrs` option is `cattrs_serdes.for_class`, apart from these because it
+needs the optional extra.
 """
 
-import datetime as dt
 import json
 from dataclasses import asdict
 from typing import Any
@@ -111,30 +112,3 @@ class FlatDataclassSerDes(SerDes):
 
     def deserialize(self, data: str, serdes_context: SerDesContext) -> Any:
         return self._cls(**self._inner.deserialize(data, serdes_context))
-
-
-def cattrs_serdes(cls: type) -> SerDes:
-    """A `cattrs` converter, for when the shapes outgrow the recursive codec.
-
-    Worth the two extra packages in the bundle (`cattrs`, `attrs`) once you need
-    discriminated unions, per-field hooks, or validation on the way in. Import is
-    local so nothing here requires it.
-
-    `datetime` needs hooks registered explicitly. cattrs leaves it as a datetime
-    object, and `json.dumps` then raises `TypeError: Object of type datetime is
-    not JSON serializable` — at the checkpoint, after the step body has run.
-    """
-    import cattrs
-
-    converter = cattrs.Converter()
-    converter.register_unstructure_hook(dt.datetime, lambda value: value.isoformat())
-    converter.register_structure_hook(dt.datetime, lambda value, _type: dt.datetime.fromisoformat(value))
-
-    class _CattrsSerDes(JsonSerDes):
-        def _to_payload(self, value: Any) -> Any:
-            return converter.unstructure(value)
-
-        def _from_payload(self, payload: Any) -> Any:
-            return converter.structure(payload, cls)
-
-    return _CattrsSerDes()
