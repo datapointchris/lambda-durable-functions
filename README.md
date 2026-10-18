@@ -58,9 +58,10 @@ that copy moves across managed-runtime patches. The handler string is
 other example packages the same way from its own directory under `src/`.
 
 `deploy.sh` updates a function that already exists. It refuses before calling AWS when
-`function.zip` is missing. What the function has to be before that first `release` is under
-`scripts/deploy.sh` below. The deploy and the last two lines run the AWS CLI under whatever
-credentials the shell holds, with `LANDING_BUCKET` set to the function's own bucket.
+`FUNCTION_NAME` is unset or `function.zip` is missing. What the function has to be before that
+first `release` is under `scripts/deploy.sh` below. The deploy and the last two lines run the AWS
+CLI under whatever credentials the shell holds, with `LANDING_BUCKET` set to the function's own
+bucket.
 
 The last command is the proof. A durable function runs durably only when invoked through a
 qualified ARN. A trigger on the bare function still invokes it, but no execution appears. An empty
@@ -144,7 +145,7 @@ the old version. `release` is the update the trigger sees. `draft` iterates with
 alias.
 
 `ARTIFACT` defaults to `function.zip` in the working directory. `ALIAS_NAME` defaults to `live`.
-`FUNCTION_NAME` has a default that names no example here. Set it on every call.
+`FUNCTION_NAME` has no default, so a call that omits it updates nothing.
 
 The script is for iteration, and infrastructure as code owns the release. Its usage text names
 Terraform, publishing through `publish = true` and `source_code_hash`. The next apply reconciles the

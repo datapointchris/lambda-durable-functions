@@ -6,7 +6,7 @@
 # alone leaves the trigger running the old version.
 set -euo pipefail
 
-FUNCTION_NAME="${FUNCTION_NAME:-error-notifier}"
+FUNCTION_NAME="${FUNCTION_NAME:-}"
 ALIAS_NAME="${ALIAS_NAME:-live}"
 ARTIFACT="${ARTIFACT:-function.zip}"
 
@@ -23,8 +23,15 @@ Terraform owns the real release path via publish = true and
 source_code_hash. Direct deploys create drift that the next apply
 reconciles, so use them for iteration only.
 
-Environment: FUNCTION_NAME, ALIAS_NAME, ARTIFACT
+Environment: FUNCTION_NAME (required), ALIAS_NAME, ARTIFACT
 EOF
+}
+
+require_function_name() {
+  [[ -n "$FUNCTION_NAME" ]] || {
+    echo "FUNCTION_NAME is not set: name the function to update" >&2
+    exit 1
+  }
 }
 
 require_artifact() {
@@ -36,6 +43,7 @@ require_artifact() {
 
 case "${1:-}" in
   draft)
+    require_function_name
     require_artifact
     aws lambda update-function-code \
       --function-name "$FUNCTION_NAME" \
@@ -43,6 +51,7 @@ case "${1:-}" in
       --query 'LastModified' --output text
     ;;
   release)
+    require_function_name
     require_artifact
     version="$(aws lambda update-function-code \
       --function-name "$FUNCTION_NAME" \
