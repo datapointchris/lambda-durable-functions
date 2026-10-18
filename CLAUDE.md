@@ -29,8 +29,9 @@ point being made. If something seems untestable, the reach is `monkeypatch.setat
 `context.step(...)` around it, the step never executes and nothing is checkpointed — and nothing
 errors.
 
-**A step costs two blocking checkpoints**, the success one blocking for a batch wait plus a network
-round trip. Pure computation does not belong inside a step, and a log line never does.
+**A step costs two checkpoints, and the success one blocks.** The handler waits on the checkpoint
+batcher, then pays a network round trip. Pure computation does not belong inside a step, and a log
+line never does.
 
 **A dataclass will not checkpoint.** The default codec carries a closed set of types and raises
 after the body has already run, so the work is done and then discarded. A custom `SerDes` is the
@@ -51,11 +52,14 @@ the SDK is at fault.
 ## Tests take about two minutes, almost all real waiting
 
 ```bash
-uv venv && uv pip install -e '.[dev]'
-.venv/bin/python -m pytest -q
-.venv/bin/python -m ruff check .
-.venv/bin/python -m basedpyright
+uv sync --all-extras
+uv run pytest -q
+uv run ruff check .
+uv run basedpyright
 ```
+
+`uv sync` installs the SDK `uv.lock` pins. An install that skips the lock resolves the newest SDK,
+which the examples are not written against.
 
 The released runner has no time skipping, so the wall clock is genuine and not a hang. Do not add
 sleeps-shortening hacks to the examples to speed it up.

@@ -61,10 +61,10 @@ handler to be testable.
 ## Running it
 
 ```bash
-uv venv && uv pip install -e '.[dev]'
-.venv/bin/python -m pytest -q
-.venv/bin/python -m ruff check .
-.venv/bin/python -m basedpyright
+uv sync --all-extras
+uv run pytest -q
+uv run ruff check .
+uv run basedpyright
 ```
 
 The suite takes a little over two minutes. Almost all of it is real waits — the released test runner

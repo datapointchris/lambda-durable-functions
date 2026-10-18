@@ -1528,11 +1528,11 @@ def test_a_lost_batch_is_reported_by_message_on_the_batch_result(scoring):
 ## Running the suite
 
 ```bash
-uv venv && uv pip install -e '.[dev]'
-.venv/bin/python -m pytest -q
-.venv/bin/python -m pytest tests/test_replay.py -q      # one file
-.venv/bin/python -m ruff check .
-.venv/bin/python -m basedpyright
+uv sync --all-extras
+uv run pytest -q
+uv run pytest tests/test_replay.py -q      # one file
+uv run ruff check .
+uv run basedpyright
 ```
 
 `pyproject.toml` sets `pythonpath = ["src", "tests"]`, which is what makes both

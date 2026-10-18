@@ -54,10 +54,11 @@ the silent case means running `mypy` by hand against an environment that never s
 
 ## No stub package is needed
 
-An earlier reading of this concluded the SDK typed its decorator as identity-preserving
-(`def deco(f: F) -> F`), which is the usual reason a signature-changing decorator confuses a
-checker. That is not what it does. Writing a `-stubs` package for it would fix nothing and would
-shadow a correctly typed dependency.
+The usual reason a signature-changing decorator confuses a checker is a decorator typed as
+identity-preserving, `def deco(f: F) -> F`. The SDK does not type `durable_step` that way. It takes
+a `Callable[Concatenate[StepContext, Params], T]` and returns a
+`Callable[Params, Callable[[StepContext], T]]`, so the checker sees the curried signature. Writing a
+`-stubs` package for it would fix nothing and would shadow a correctly typed dependency.
 
 ## ruff's ARG rules fire on the context parameter, if you enable them
 
