@@ -64,8 +64,10 @@ which the examples are not written against.
 The released runner has no time skipping, so the wall clock is genuine and not a hang. Do not add
 sleeps-shortening hacks to the examples to speed it up.
 
-`basedpyright` is deliberate: mypy is silent on the missing-parameter diagnostic that matters here.
-`docs/typing-and-tooling.md` explains which diagnostic and why.
+An `Argument missing for parameter` error from basedpyright on a correct step means the SDK is
+missing from the environment it checked, not that the step is wrong. mypy reports nothing in the
+same case, because the shared `ignore_missing_imports` turns the import into `Any`.
+`docs/typing-and-tooling.md` traces the chain.
 
 ## Scope boundary
 
