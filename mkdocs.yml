@@ -89,6 +89,7 @@ validation:
     absolute_links: ignore
 
 nav:
+  - Code Kingdom: https://docs.ichrisbirch.com/
   - Home: index.md
   - Concepts: concepts.md
   - Steps: steps.md
