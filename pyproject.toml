@@ -18,7 +18,7 @@ dev = [
     "pytest>=8.0",
     # The version pre-commit and CI run. A newer ruff formats Markdown code
     # blocks, and the docs quote SDK source verbatim in some of them.
-    "ruff==0.12.5",
+    "ruff==0.17.1",
     "basedpyright",
     "mypy",
 ]
