@@ -1,6 +1,6 @@
 """A `cattrs` converter as a checkpoint codec, for when the shapes outgrow the recursive codec.
 
-The one module that imports the `cattrs` extra, so nothing else in the package requires it.
+Nothing else in the package imports `cattrs`, so the package installs without the extra.
 Worth the two extra packages in the bundle (`cattrs`, `attrs`) once you need discriminated
 unions, per-field hooks, or validation on the way in.
 """

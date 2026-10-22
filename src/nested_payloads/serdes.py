@@ -3,8 +3,8 @@
 The SDK's default codec carries a closed set of types. A dataclass is not among
 them, so a step returning one raises `SerDesError: Unsupported type` after the
 body has already run. These are the options, in the order worth trying them.
-The `cattrs` option is `cattrs_serdes.for_class`, apart from these because it
-needs the optional extra.
+`cattrs_serdes.for_class` is a fourth, in its own module because it imports
+the optional `cattrs` extra.
 """
 
 import json
