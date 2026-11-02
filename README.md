@@ -18,9 +18,10 @@ cd lambda-durable-functions
 uv sync --all-extras   # the SDK, its local test runner, cattrs, pytest, ruff, basedpyright and mypy, as uv.lock pins them
 ```
 
-uv is the one prerequisite. `uv.lock` pins the SDK and the test runner every page was measured
-against. `uv tree --frozen --depth 1` prints those pins. An install that skips the lock resolves the
-newest SDK instead. The examples are written against the pinned one.
+uv is the one prerequisite for the suite, and the deploy steps also need the AWS CLI. `uv.lock`
+pins the SDK and the test runner every page was measured against. `uv tree --frozen --depth 1`
+prints those pins. An install that skips the lock resolves the newest SDK instead. The examples are
+written against the pinned one.
 
 `requires-python = ">=3.13"` is the Lambda runtime's version, not a preference.
 
@@ -63,10 +64,10 @@ first `release` is under `scripts/deploy.sh` below. The deploy and the last two 
 CLI under whatever credentials the shell holds, with `LANDING_BUCKET` set to the function's own
 bucket.
 
-The last command is the proof. A durable function runs durably only when invoked through a
-qualified ARN. A trigger on the bare function still invokes it, but no execution appears. An empty
-list while the function is being invoked means the trigger targets the bare function rather than
-the alias.
+The last command shows whether the trigger reached a durable execution. A durable function runs
+durably only when invoked through a qualified ARN. A trigger on the bare function still invokes it,
+but no execution appears. An empty list while the function is being invoked means the trigger
+targets the bare function rather than the alias.
 
 ## Each example is a complete Lambda, tested without restructuring it
 
@@ -83,7 +84,7 @@ the alias.
 Every handler keeps the conventional shape: module-scope clients, module-scope configuration, and
 `lambda_handler(event, context)` at module level. The tests reach every seam with
 `monkeypatch.setattr` on module attributes. No handler takes a factory, a class or an injected
-client to be testable. That is a claim the examples exist to demonstrate.
+client to be testable.
 
 Every example but `nested_payloads` keeps its decisions in a pure `logic.py`, tested with plain
 pytest and no SDK. `handler.py` holds the clients and the durable glue, tested through fakes and the
@@ -145,7 +146,8 @@ the old version. `release` is the update the trigger sees. `draft` iterates with
 alias.
 
 `ARTIFACT` defaults to `function.zip` in the working directory. `ALIAS_NAME` defaults to `live`.
-`FUNCTION_NAME` has no default, so a call that omits it updates nothing.
+`FUNCTION_NAME` has no default. A call that omits it prints `FUNCTION_NAME is not set: name the
+function to update` and exits 1.
 
 The script is for iteration, and infrastructure as code owns the release. Its usage text names
 Terraform, publishing through `publish = true` and `source_code_hash`. The next apply reconciles the

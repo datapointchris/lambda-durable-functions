@@ -40,7 +40,7 @@ handler to be testable.
 | `approval_gate` | `wait_for_callback`, callback timeout and heartbeat, approve / reject / lapse |
 | `flaky_api_sync` | Custom `retry_strategy`, retryable versus permanent errors, `with_retry`, backoff with jitter |
 | `pipeline_chain` | `context.parallel`, `ParallelBranch`, `context.invoke`, nested operation history |
-| `nested_payloads` | A nested `StrEnum` dataclass through a checkpoint and through S3 — `minimal.py` in 21 lines, the general codec beside it |
+| `nested_payloads` | A nested `StrEnum` dataclass through a checkpoint and through S3 — hand-written `to_dict` and `from_dict` in `minimal.py`, the general codec beside it, and a `cattrs` variant |
 
 ## The shortest useful summary
 

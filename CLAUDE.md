@@ -1,8 +1,7 @@
 # lambda-durable-functions
 
-Read the README first, and `docs/concepts.md` before touching any handler. The README's "Findings
-worth knowing before writing any of this" list is the shortest path to not repeating an expensive
-mistake.
+Read the README first, and `docs/concepts.md` before touching any handler. The README's list of
+expensive mistakes names the five that fail late or raise nothing.
 
 ## This is a reference, read as a guide
 
