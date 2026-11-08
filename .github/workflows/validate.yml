@@ -36,10 +36,9 @@ jobs:
 
       - run: uv sync --all-extras --dev
 
-      # --with pytest, because skipping is the wrong answer here: a repo with a
-      # real test suite that never declared pytest as a dependency would
-      # silently stop being tested. Supplying the runner runs the tests; a suite
-      # needing plugins still declares those itself.
+      # --with pytest, so a repo whose suite never declared pytest as a
+      # dependency still runs it rather than skipping it. A suite needing
+      # plugins declares those itself.
       #
       # pytest exits 5 when it collects nothing, which is not a failure for a
       # repo that has no tests yet. Written explicitly rather than as an && chain
