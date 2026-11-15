@@ -1,7 +1,7 @@
 """Checkpoint serialization for types the SDK's default codec does not carry.
 
-`ExtendedTypeSerDes` handles None, str, int, float, bool, bytes, UUID, Decimal,
-datetime, date, tuple, list, dict and BatchResult. Anything else raises
+`ExtendedTypeSerDes` carries the closed set of types the `TypeTag` enum in the
+SDK's `serdes.py` names, listed in docs/sdk-internals.md. Anything else raises
 `SerDesError: Unsupported type`, dataclasses included.
 """
 
