@@ -41,22 +41,25 @@ require_artifact() {
   }
 }
 
+# The one call that uploads the artifact. Each verb passes the flags that
+# differ, so a flag every upload needs is added here once.
+update_function_code() {
+  aws lambda update-function-code \
+    --function-name "$FUNCTION_NAME" \
+    --zip-file "fileb://$ARTIFACT" \
+    "$@"
+}
+
 case "${1:-}" in
   draft)
     require_function_name
     require_artifact
-    aws lambda update-function-code \
-      --function-name "$FUNCTION_NAME" \
-      --zip-file "fileb://$ARTIFACT" \
-      --query 'LastModified' --output text
+    update_function_code --query 'LastModified' --output text
     ;;
   release)
     require_function_name
     require_artifact
-    version="$(aws lambda update-function-code \
-      --function-name "$FUNCTION_NAME" \
-      --zip-file "fileb://$ARTIFACT" \
-      --publish --query Version --output text)"
+    version="$(update_function_code --publish --query Version --output text)"
     aws lambda update-alias \
       --function-name "$FUNCTION_NAME" \
       --name "$ALIAS_NAME" \
