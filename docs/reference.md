@@ -136,8 +136,10 @@ else is shared.
 | `item_batcher` | `ItemBatcher` | `ItemBatcher()` | absent |
 | `item_namer` | `Callable[[T, int], str]` \| `None` | `None` | absent |
 
-The default `completion_config` differs. A `map` with no config tolerates every failure; a
-`parallel` with no config tolerates none.
+The default `completion_config` differs in form but not in effect. A `map`'s `CompletionConfig()`
+sets no criteria, and with no criteria the executor stops at the first failure. A `parallel`'s
+`all_successful()` sets both tolerances to `0`. Neither tolerates a failure unless told to; the
+measured table is in [Fan-out and Composition](fan-out.md).
 
 !!! danger "`item_batcher` is accepted and never read in 1.7.0"
 
