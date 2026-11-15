@@ -77,14 +77,8 @@ Ruff does no call-arity analysis, so it is never the source of a missing-paramet
 
 ## What the checkers are configured to
 
-```toml
-[tool.pyright]              # named `pyright` so basedpyright and Pylance both read it
-typeCheckingMode = "standard"
-
-[tool.ruff.lint]
-select = ["E", "F", "UP", "B", "SIM", "I"]
-```
-
-`standard` rather than basedpyright's `recommended` default, matching the shared default. The
-`select` list is the shared default too — `PTH` would govern nothing, because nothing here touches
-the filesystem.
+`pyproject.toml` holds both configurations: `[tool.pyright]` for basedpyright and
+`[tool.ruff.lint]` for ruff. The pyright table is named `pyright` so basedpyright and Pylance both
+read it. Its `typeCheckingMode` is `standard` rather than basedpyright's `recommended` default,
+matching the shared default. The ruff `select` list is the shared default too. It leaves out `PTH`,
+which would govern nothing here, because nothing here touches the filesystem.

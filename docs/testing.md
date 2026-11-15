@@ -1535,16 +1535,9 @@ uv run ruff check .
 uv run basedpyright
 ```
 
-`pyproject.toml` sets `pythonpath = ["src", "tests"]`, which is what makes both
-`from landing_zone import handler` and `from conftest import s3_page` resolve with no packaging
-gymnastics:
-
-```toml
-[tool.pytest.ini_options]
-minversion = "8.0"
-testpaths = ["tests"]
-pythonpath = ["src", "tests"]
-```
+`[tool.pytest.ini_options]` in `pyproject.toml` sets `pythonpath = ["src", "tests"]`, which is
+what makes both `from landing_zone import handler` and `from conftest import s3_page` resolve with
+no packaging gymnastics.
 
 The suite takes a little over two minutes, and almost all of that is real waiting — modeled
 durations, retry backoffs, and the runner's own poll interval. There is one xfail: the
