@@ -22,22 +22,15 @@ convention — tests reach every seam with `monkeypatch.setattr` on module attri
 A refactor that introduces a factory, a class, or dependency injection "for testability" breaks the
 point being made. If something seems untestable, the reach is `monkeypatch.setattr`.
 
-## The four traps that cost the most
+## The expensive mistakes, as rules
 
-**`@durable_step` curries.** A decorated call returns a closure and runs nothing. Without
-`context.step(...)` around it, the step never executes and nothing is checkpointed — and nothing
-errors.
+The README's "The expensive mistakes fail late or not at all" explains each one. Every change here
+keeps to them:
 
-**A step costs two checkpoints, and the success one blocks.** The handler waits on the checkpoint
-batcher, then pays a network round trip. Pure computation does not belong inside a step, and a log
-line never does.
-
-**A dataclass will not checkpoint.** The default codec carries a closed set of types and raises
-after the body has already run, so the work is done and then discarded. A custom `SerDes` is the
-fix; `landing_zone` and `nested_payloads` both show it.
-
-**`context.logger` only suppresses while replaying.** Past the last checkpointed operation the
-status is `NEW`, so a log there repeats. A log inside a step body cannot repeat at all.
+- Wrap every `@durable_step` call in `context.step(...)`, or the step silently never runs.
+- Keep pure computation and log lines out of a step, because each step pays a blocking checkpoint.
+- Give a step that returns a dataclass a custom `SerDes`, as `landing_zone` and `nested_payloads` do.
+- Log inside a step body rather than through `context.logger` past the last checkpoint.
 
 ## The local runner is not the SDK
 

@@ -44,19 +44,19 @@ handler to be testable.
 
 ## The shortest useful summary
 
-- **`@durable_step` curries.** A decorated call returns a closure and runs nothing. Without
-  `context.step(...)` around it, the step never executes and nothing is checkpointed.
-- **Write a nested `def`, not a lambda.** A lambda cannot hold two statements, so it cannot both do
-  the work and log. The `def` receives `step_context` as its only parameter. See [Steps](steps.md).
-- **A log inside a step body cannot repeat.** A succeeded checkpoint short-circuits the body.
-  `context.logger` in the handler is different — it only suppresses while the context is replaying.
-- **A step costs two checkpoints**, one of them blocking, plus durable state for its return value.
-  Pure computation does not belong in one and a log line never does.
-- **The default codec carries a closed set of types.** A dataclass raises `SerDesError` at
-  checkpoint time, after the body has already run. `asdict` plus the constructor fixes the top level
-  and leaves nested types as dicts, which fails silently. See [Serialization](serialization.md).
-- **Call counts are the assertion that matters.** The handler body replays; step bodies do not. A
-  side effect that escaped its step shows up as a count of two. See [Testing](testing.md).
+Each rule links to the page that explains it.
+
+- **Wrap every `@durable_step` call in `context.step(...)`**, or the step never runs. See
+  [Steps](steps.md).
+- **Write a step as a nested `def`, not a lambda**, so it can both do the work and log. See
+  [Steps](steps.md).
+- **Log inside a step body**, where a log cannot repeat. See [Steps](steps.md).
+- **Keep pure computation and log lines out of a step**, because every step pays for checkpoints.
+  See [Steps](steps.md).
+- **Return a dict from a step, or give its dataclass a custom `SerDes`.** See
+  [Serialization](serialization.md).
+- **Assert on call counts**, because a side effect that escaped its step counts two. See
+  [Testing](testing.md).
 
 ## Running it
 
