@@ -3,6 +3,7 @@
 import datetime as dt
 import json
 from enum import Enum
+from typing import Any
 
 import pytest
 from aws_durable_execution_sdk_python import DurableContext
@@ -41,7 +42,8 @@ def test_the_nested_type_is_restored_not_left_as_a_dict():
 
 def test_a_nested_dict_needs_no_custom_serdes_at_all():
     """The reason no SerDes subclass appears in minimal.py."""
-    codec, ctx = ExtendedTypeSerDes(), SerDesContext()
+    codec: ExtendedTypeSerDes[Any] = ExtendedTypeSerDes()
+    ctx = SerDesContext()
 
     restored = codec.deserialize(codec.serialize(NESTED.to_dict(), ctx), ctx)
 
@@ -50,7 +52,8 @@ def test_a_nested_dict_needs_no_custom_serdes_at_all():
 
 def test_the_default_codec_even_keeps_a_raw_datetime_inside_a_dict():
     """So to_dict may skip isoformat if the payload never reaches S3."""
-    codec, ctx = ExtendedTypeSerDes(), SerDesContext()
+    codec: ExtendedTypeSerDes[Any] = ExtendedTypeSerDes()
+    ctx = SerDesContext()
     payload = {'files': [{'key': 'a.csv', 'modified': dt.datetime(2026, 8, 19, 9, 0, tzinfo=dt.UTC)}]}
 
     restored = codec.deserialize(codec.serialize(payload, ctx), ctx)
@@ -115,13 +118,15 @@ def test_a_handler_using_only_dicts_needs_no_step_config(fake_s3):
 
 def test_a_strenum_serializes_with_no_configuration():
     """It is a str subclass, so the codec takes its primitive fast path."""
-    codec, ctx = ExtendedTypeSerDes(), SerDesContext()
+    codec: ExtendedTypeSerDes[Any] = ExtendedTypeSerDes()
+    ctx = SerDesContext()
 
     assert codec.serialize(Status.READY, ctx) == '"ready"'
 
 
 def test_a_strenum_comes_back_as_a_plain_str():
-    codec, ctx = ExtendedTypeSerDes(), SerDesContext()
+    codec: ExtendedTypeSerDes[Any] = ExtendedTypeSerDes()
+    ctx = SerDesContext()
 
     restored = codec.deserialize(codec.serialize(Status.READY, ctx), ctx)
 
@@ -131,7 +136,8 @@ def test_a_strenum_comes_back_as_a_plain_str():
 
 def test_a_downgraded_strenum_still_compares_and_matches():
     """Which is why the downgrade goes unnoticed until something checks the type."""
-    codec, ctx = ExtendedTypeSerDes(), SerDesContext()
+    codec: ExtendedTypeSerDes[Any] = ExtendedTypeSerDes()
+    ctx = SerDesContext()
     restored = codec.deserialize(codec.serialize(Status.READY, ctx), ctx)
 
     assert restored == Status.READY
@@ -145,7 +151,8 @@ def test_a_downgraded_strenum_still_compares_and_matches():
 
 
 def test_a_downgraded_strenum_loses_isinstance_and_name():
-    codec, ctx = ExtendedTypeSerDes(), SerDesContext()
+    codec: ExtendedTypeSerDes[Any] = ExtendedTypeSerDes()
+    ctx = SerDesContext()
     restored = codec.deserialize(codec.serialize(Status.READY, ctx), ctx)
 
     assert not isinstance(restored, Status)
@@ -260,12 +267,12 @@ def test_later_steps_use_the_dataclass_without_converting_again(minimal_handler,
     """
     handler_module, fake = minimal_handler
     conversions: list[int] = []
-    original = Manifest.from_dict.__func__
+    original = Manifest.from_dict
     effects: list[str] = []
 
     def counting(cls, payload):
         conversions.append(1)
-        return original(cls, payload)
+        return original(payload)
 
     monkeypatch.setattr(Manifest, 'from_dict', classmethod(counting))
 

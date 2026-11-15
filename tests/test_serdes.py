@@ -2,6 +2,7 @@
 
 import datetime as dt
 from dataclasses import dataclass
+from typing import Any
 
 import pytest
 from aws_durable_execution_sdk_python.exceptions import SerDesError
@@ -51,5 +52,5 @@ def test_a_datetime_field_is_preserved_rather_than_stringified(ctx):
     [None, 'x', 1, 1.5, True, b'bytes', (1, 2), [1, 2], {'k': 'v'}, dt.datetime(2026, 1, 1)],
 )
 def test_the_default_codec_carries_its_documented_types(value, ctx):
-    codec = ExtendedTypeSerDes()
+    codec: ExtendedTypeSerDes[Any] = ExtendedTypeSerDes()
     assert codec.deserialize(codec.serialize(value, ctx), ctx) == value
