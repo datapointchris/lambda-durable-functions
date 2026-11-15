@@ -24,6 +24,10 @@ source_code_hash. Direct deploys create drift that the next apply
 reconciles, so use them for iteration only.
 
 Environment: FUNCTION_NAME (required), ALIAS_NAME, ARTIFACT
+
+Examples:
+  FUNCTION_NAME=landing-zone-trigger scripts/deploy.sh draft
+  FUNCTION_NAME=landing-zone-trigger scripts/deploy.sh release
 EOF
 }
 
@@ -66,6 +70,9 @@ case "${1:-}" in
       --function-version "$version" \
       --query 'AliasArn' --output text
     echo "$ALIAS_NAME -> version $version"
+    ;;
+  -h | --help)
+    usage
     ;;
   *)
     usage

@@ -137,6 +137,7 @@ harness limits in [docs/testing.md](docs/testing.md).
 ```bash
 FUNCTION_NAME=landing-zone-trigger scripts/deploy.sh draft    # $LATEST only; the alias, and the trigger behind it, stay put
 FUNCTION_NAME=landing-zone-trigger scripts/deploy.sh release  # publish a version and move the alias onto it
+scripts/deploy.sh --help                                      # usage with examples, and exit 0
 scripts/deploy.sh                                             # usage, and exit 1
 ```
 
