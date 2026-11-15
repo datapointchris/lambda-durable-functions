@@ -1099,8 +1099,10 @@ is.
 
 ### The guard test is what makes a once-only assertion mean anything
 
-Every example carries one, and every one of them is three lines of the same shape: wrap a function
-the handler body calls on **every** pass, count the entries, assert on more than one.
+`landing_zone` (in `tests/test_replay.py`), `approval_gate`, `batch_scoring`, `flaky_api_sync`,
+`order_saga` and `pipeline_chain` each carry one. `nested_payloads` carries none. Every guard is
+three lines of the same shape: wrap a function the handler body calls on **every** pass, count the
+entries, assert on more than one.
 
 ```python
 def test_the_handler_body_really_does_re_enter(clients, monkeypatch):
