@@ -60,12 +60,8 @@ handler to be testable.
 
 ## Running it
 
-```bash
-uv sync --all-extras
-uv run pytest -q
-uv run ruff check .
-uv run basedpyright
-```
-
-The suite takes a little over two minutes. Almost all of it is real waits — the released test runner
-has no time skipping.
+The README holds the commands, with what each one does.
+[Install](https://github.com/datapointchris/lambda-durable-functions#install) sets up the locked
+environment.
+[Starting from scratch](https://github.com/datapointchris/lambda-durable-functions#starting-from-scratch)
+runs the suite and the checks, then builds and deploys an example.
