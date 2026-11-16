@@ -50,6 +50,10 @@ MIGRATION_STATE_MACHINE_ARN = os.environ['MIGRATION_STATE_MACHINE_ARN']
 REVIEW_WINDOW_SECONDS = 4 * 60 * 60
 REVIEW_SERVICE_HEARTBEAT_SECONDS = 15 * 60
 
+# The gate's operation name. The SDK derives the callback's and the submitter
+# step's names from it.
+REVIEW_OPERATION_NAME = 'review'
+
 
 def post_review_request(message: dict) -> str:
     """Hand the request, and the token that answers it, to the approval service."""
@@ -83,7 +87,7 @@ def lambda_handler(event: dict, context: DurableContext) -> dict:
     try:
         answer = context.wait_for_callback(
             request_review,
-            name='review',
+            name=REVIEW_OPERATION_NAME,
             config=WaitForCallbackConfig(
                 timeout=Duration.from_seconds(REVIEW_WINDOW_SECONDS),
                 heartbeat_timeout=Duration.from_seconds(REVIEW_SERVICE_HEARTBEAT_SECONDS),

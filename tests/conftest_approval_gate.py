@@ -25,10 +25,11 @@ from approval_gate import handler as handler_module  # noqa: E402
 # `wait_for_callback(name='review')` does not name the callback 'review'. It opens
 # a child context under that name and mints the callback inside it, suffixed. The
 # runner matches on the operation name, so this is the string it needs.
-CALLBACK_OPERATION_NAME = 'review create callback id'
-
-GATE_CONTEXT_NAME = 'review'
-SUBMITTER_STEP_NAME = 'review submitter'
+#
+# The SDK owns both suffixes and formats them inline, with no constant to import.
+GATE_CONTEXT_NAME = handler_module.REVIEW_OPERATION_NAME
+CALLBACK_OPERATION_NAME = f'{GATE_CONTEXT_NAME} create callback id'
+SUBMITTER_STEP_NAME = f'{GATE_CONTEXT_NAME} submitter'
 
 
 class FakeSqs:
