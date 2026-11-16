@@ -63,8 +63,10 @@ same case, because the shared `ignore_missing_imports` turns the import into `An
 
 ## Scope boundary
 
-Deployment, Terraform, versions and aliases, and the trigger wiring live in the published guide,
-not in this repo. Do not add a Terraform directory or a deploy pipeline here — the split is
-intentional and the other half is not duplicated.
+Provisioning lives in the published guide, not in this repo: Terraform, creating the function and
+its alias, and the trigger wiring. `scripts/deploy.sh` only updates a function that already exists.
+`draft` updates `$LATEST`, and `release` publishes a version and moves the alias onto it, for
+iteration between Terraform applies. Do not add a Terraform directory or a provisioning pipeline
+here. The split is intentional, and the other half is not duplicated.
 
 `requires-python = ">=3.13"` matches the Lambda runtime and is not a preference.
