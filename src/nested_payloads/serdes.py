@@ -101,6 +101,10 @@ class FlatDataclassSerDes(SerDes):
     Kept because it is the obvious first attempt and it fails quietly: a nested
     field comes back as a plain dict, and the failure surfaces later as an
     AttributeError somewhere else entirely.
+
+    `landing_zone.serdes.DataclassSerDes` carries the same body on purpose.
+    Each example is a self-contained Lambda that imports nothing from another,
+    so it can be read on its own.
     """
 
     def __init__(self, cls: type) -> None:

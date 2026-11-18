@@ -22,6 +22,10 @@ class DataclassSerDes(SerDes):
     Fields that are themselves dataclasses come back as plain dicts, because
     `asdict` flattens them going out and the constructor call only rebuilds the
     top level. Nested types need their own reconstruction here.
+
+    `nested_payloads.serdes.FlatDataclassSerDes` carries the same body on
+    purpose. Each example is a self-contained Lambda that imports nothing from
+    another, so it can be read on its own.
     """
 
     def __init__(self, cls: type) -> None:
