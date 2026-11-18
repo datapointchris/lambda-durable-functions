@@ -134,8 +134,8 @@ def lambda_handler(event: dict, context: DurableContext) -> dict:
     }
 ```
 
-The types are `src/nested_payloads/minimal.py` — 21 lines of conversion across two types — and the
-handler is `src/nested_payloads/minimal_handler.py`. `src/nested_payloads/handler.py` is the same
+The types are `src/nested_payloads/minimal.py`, a `to_dict` and a `from_dict` on each of its two
+types, and the handler is `src/nested_payloads/minimal_handler.py`. `src/nested_payloads/handler.py` is the same
 job written with the general codec, for comparison. Everything below is what to reach for when the
 small version stops being enough.
 
@@ -190,10 +190,16 @@ instance built with a bare string — a dataclass does no runtime type checking,
 
 ## Sizing the alternative honestly
 
-| | Lines | Buys you |
+| | What you write | Buys you |
 | --- | --- | --- |
-| Two methods per type | ~21 | Works today, obvious, nothing to learn |
-| `codec.py` + `serdes.py` + `store.py` | ~256 | Never write a conversion again, at any depth |
+| Two methods per type | `to_dict` and `from_dict` on every type, as `minimal.py` does | Works today, obvious, nothing to learn |
+| `codec.py` + `serdes.py` + `store.py` | Three modules once, nothing per type | Never write a conversion again, at any depth |
+
+The size of each, as it stands:
+
+```bash
+wc -l src/nested_payloads/minimal.py src/nested_payloads/codec.py src/nested_payloads/serdes.py src/nested_payloads/store.py
+```
 
 At two dataclasses the machinery loses. It starts winning somewhere around five or six types, or
 when the shapes change often enough that hand-written methods drift from their fields. Below that,
@@ -238,8 +244,8 @@ def test_stored_bytes_and_checkpoint_bytes_agree(fakes, ctx):
 
 | Approach | Reach for it when | Cost |
 | --- | --- | --- |
-| `to_dict` / `from_dict` | **Default.** A handful of types in one Lambda | ~21 lines, no config |
-| `NestedDataclassSerDes` | Many types, or shapes that change often | ~256 lines, no dependencies |
+| `to_dict` / `from_dict` | **Default.** A handful of types in one Lambda | Two methods per type, no config |
+| `NestedDataclassSerDes` | Many types, or shapes that change often | `codec.py` + `serdes.py`, no dependencies |
 | `ExplicitSerDes` | The wire format is a contract — versioning, renames, computed fields | Two methods per type |
 | `cattrs` | Discriminated unions, per-field hooks, validation on the way in | Two packages in the bundle |
 | No dataclass at the boundary | The type is only used inside pure logic | Nothing, but you lose the type at the seam |

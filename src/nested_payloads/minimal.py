@@ -1,7 +1,8 @@
 """The small way, for when the codec costs more than it saves.
 
-`codec.py` plus `serdes.py` is around 200 lines. For two dataclasses in one
-Lambda that is a worse trade than converting by hand where it happens.
+`codec.py` plus `serdes.py` is a general type-hint-driven codec. For two
+dataclasses in one Lambda that is a worse trade than converting by hand where
+it happens.
 
 No `SerDes` subclass appears here, and none is needed. `dict`, `list` and
 `datetime` are all in the default codec's supported set and it recurses, so a
